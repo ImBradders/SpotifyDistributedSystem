@@ -4,3 +4,8 @@
 
 # don't track any exes
 *.exe
+
+# don't track extra java shit
+*.classpath
+*.project
+*.iml
