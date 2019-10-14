@@ -1,0 +1,5 @@
+# don't track the .vs folders
+*.vs/
+
+# don't track any exes
+*.exe
