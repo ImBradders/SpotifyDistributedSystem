@@ -1,10 +1,10 @@
 ﻿{
   "version": "1.0.0",
   "restore": {
-    "projectUniqueName": "E:\\Files\\Uni\\Year3\\Distributed Systems\\Spotify Distributed System\\Servers\\CommunicationServer\\CommunicationServer.csproj",
+    "projectUniqueName": "F:\\Files\\Uni\\Year3\\Distributed Systems\\Spotify Distributed System\\Servers\\CommunicationServer\\CommunicationServer.csproj",
     "projectName": "CommunicationServer",
-    "projectPath": "E:\\Files\\Uni\\Year3\\Distributed Systems\\Spotify Distributed System\\Servers\\CommunicationServer\\CommunicationServer.csproj",
-    "outputPath": "E:\\Files\\Uni\\Year3\\Distributed Systems\\Spotify Distributed System\\Servers\\CommunicationServer\\obj\\",
+    "projectPath": "F:\\Files\\Uni\\Year3\\Distributed Systems\\Spotify Distributed System\\Servers\\CommunicationServer\\CommunicationServer.csproj",
+    "outputPath": "F:\\Files\\Uni\\Year3\\Distributed Systems\\Spotify Distributed System\\Servers\\CommunicationServer\\obj\\",
     "projectStyle": "PackageReference",
     "fallbackFolders": [
       "C:\\Microsoft\\Xamarin\\NuGet",
