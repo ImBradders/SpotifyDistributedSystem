@@ -1,5 +1,6 @@
 # don't track the .vs folders
 *.vs/
+*.idea/
 
 # don't track any exes
 *.exe
