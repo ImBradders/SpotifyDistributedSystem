@@ -4,7 +4,7 @@ namespace CommunicationServer
 {
     class BootstrapServer
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             const int defaultPort = 57313;
             int portToListenOn = defaultPort;
@@ -17,7 +17,8 @@ namespace CommunicationServer
                 }
             }
             
-            
+            CommunicationServer communicationServer = new CommunicationServer(portToListenOn);
+            return communicationServer.Run();
         }
     }
 }
