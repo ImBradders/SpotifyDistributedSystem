@@ -51,12 +51,12 @@ public class ClientConnectionHandler implements Runnable {
                 String messageToProcess = MessageConverter.byteToString(message);
 
                 //process messages
-
+                byte[] toSend;
                 switch(messageToProcess) {
                     //based on the state
                     //choose entered command
                     case "HEARTBEAT" :
-                        byte[] toSend = MessageConverter.stringToByte("HEARTBEAT");
+                        toSend = MessageConverter.stringToByte("HEARTBEAT");
                         dataOut.writeInt(toSend.length);
                         dataOut.write(toSend);
                         dataOut.flush();
@@ -64,6 +64,10 @@ public class ClientConnectionHandler implements Runnable {
 
                     default:
                         //state not set properly or in bad state. Reset and terminate connection
+                        toSend = MessageConverter.stringToByte("LOLEXDEE");
+                        dataOut.writeInt(toSend.length);
+                        dataOut.write(toSend);
+                        dataOut.flush();
                         break;
                 }
             }
