@@ -45,8 +45,6 @@ namespace FrontEnd
             if (txtToSend.Text != "")
             {
                 byte[] dataToSend = Encoding.UTF8.GetBytes(txtToSend.Text);
-                //first send the number of bytes to be received
-                _socket.Send(BitConverter.GetBytes(dataToSend.Length));
                 //then send the message
                 _socket.Send(dataToSend);
 
