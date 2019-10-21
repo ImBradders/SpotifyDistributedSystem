@@ -2,7 +2,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.ByteBuffer;
 
 /**
  * Handles the connection for each client currently connected to the server.
