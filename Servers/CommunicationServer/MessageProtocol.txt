@@ -11,5 +11,8 @@ Description
 HEARTBEAT | HEARTBEAT
 A message to check to ensure that the connection is still alive, as if the client hasn't sent a message for a considerable time.
 
+GETSERVER | an IP address to the server which will handle their music streaming
+A message to ask for a move to a music service provider.
+
 [Unsupported Message] | MESSAGEUNSUPPORTED
 If the client sends a message that is not supported by the server, MESSAGEUNSUPPORTED will be returned.
