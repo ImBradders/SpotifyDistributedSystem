@@ -27,8 +27,7 @@ public class ClientConnectionHandler implements Runnable {
      * This allows the class to implement runnable so that the class will run as a thread when called to do so.
      */
     public void run() {
-        int messageSize;
-        byte[] message;
+        byte[] buffer = new byte[4194304];
         boolean isConnected;
 
         try {
@@ -43,14 +42,10 @@ public class ClientConnectionHandler implements Runnable {
 
             while(isConnected) {
                 //get the sent data
-                message = new byte[1];
-                dataIn.read(message);
-                messageSize = message[0];
-                message = new byte[messageSize];
-                dataIn.readFully(message, 0, messageSize);
+                dataIn.readFully(buffer);
 
                 //convert message to string
-                String messageToProcess = MessageConverter.byteToString(message);
+                String messageToProcess = MessageConverter.byteToString(buffer);
 
                 //process messages
                 byte[] toSend;
