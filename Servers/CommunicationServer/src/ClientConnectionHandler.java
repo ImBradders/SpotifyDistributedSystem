@@ -58,6 +58,10 @@ public class ClientConnectionHandler implements Runnable {
                 switch(messageToProcess) {
                     //based on the state
                     //choose entered command
+                    case "GETSERVER" :
+
+                        break;
+
                     case "HEARTBEAT" :
                         toSend = MessageConverter.stringToByte("HEARTBEAT");
                         dataOut.write(toSend.length);

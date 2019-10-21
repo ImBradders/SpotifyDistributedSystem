@@ -1,0 +1,15 @@
+Intro
+This is the message protocol that the Communication Server will use. 
+The idea behind the Communication Server is to act as a load balancer between the other online servers - keeping clients always connected whereever possible.
+In order to handle this, the Communication Server will allow clients to connect to it where they will be assigned a server to connect to in order for music to be delivered.
+
+Messages Handled
+Format:
+MessageSent | Response
+Description
+
+HEARTBEAT | HEARTBEAT
+A message to check to ensure that the connection is still alive, as if the client hasn't sent a message for a considerable time.
+
+[Unsupported Message] | MESSAGEUNSUPPORTED
+If the client sends a message that is not supported by the server, MESSAGEUNSUPPORTED will be returned.
