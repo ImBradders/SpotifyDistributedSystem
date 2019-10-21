@@ -2,6 +2,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 
 /**
  * Handles the connection for each client currently connected to the server.
@@ -43,7 +44,9 @@ public class ClientConnectionHandler implements Runnable {
 
             while(isConnected) {
                 //get the sent data
-                messageSize = dataIn.readInt();
+                message = new byte[1];
+                dataIn.read(message);
+                messageSize = message[0];
                 message = new byte[messageSize];
                 dataIn.readFully(message, 0, messageSize);
 
@@ -57,7 +60,8 @@ public class ClientConnectionHandler implements Runnable {
                     //choose entered command
                     case "HEARTBEAT" :
                         toSend = MessageConverter.stringToByte("HEARTBEAT");
-                        dataOut.writeInt(toSend.length);
+                        dataOut.write(toSend.length);
+                        dataOut.flush();
                         dataOut.write(toSend);
                         dataOut.flush();
                         break;
@@ -65,7 +69,8 @@ public class ClientConnectionHandler implements Runnable {
                     default:
                         //state not set properly or in bad state. Reset and terminate connection
                         toSend = MessageConverter.stringToByte("LOLEXDEE");
-                        dataOut.writeInt(toSend.length);
+                        dataOut.write(toSend.length);
+                        dataOut.flush();
                         dataOut.write(toSend);
                         dataOut.flush();
                         break;

@@ -50,10 +50,11 @@ namespace FrontEnd
                 //then send the message
                 _socket.Send(dataToSend);
 
-                byte[] messageLength = new byte[1024];
+                byte[] messageLength = new byte[1];
                 _socket.Receive(messageLength);
-                int length = BitConverter.ToInt32(messageLength, 0);
+                int length = messageLength[0];
                 byte[] message = new byte[length];
+                _socket.Receive(message);
                 lblReceived.Text = Encoding.UTF8.GetString(message, 0, message.Length);
             }
         }
