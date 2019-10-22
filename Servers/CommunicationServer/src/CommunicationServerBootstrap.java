@@ -1,6 +1,6 @@
 public class CommunicationServerBootstrap {
     /**
-     * The main class so that the program can run.
+     * The main method so that the program can run.
      *
      * @param args command line arguments that may be passed in
      */
