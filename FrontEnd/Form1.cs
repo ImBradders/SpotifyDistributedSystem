@@ -34,6 +34,9 @@ namespace FrontEnd
             try
             {
                 _socket.Connect(_localEndPoint);
+                int bytesToSend = Encoding.UTF8.GetBytes("CLIENT", 0, 6, buffer, 0);
+                _socket.Send(buffer, bytesToSend, SocketFlags.None);
+                ClearBuffer();
             }
             catch (Exception exception)
             {

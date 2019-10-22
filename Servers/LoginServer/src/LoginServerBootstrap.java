@@ -10,6 +10,6 @@ public class LoginServerBootstrap {
      * @param args command line arguments that may be passed in.
      */
     public static void main (String[] args) {
-        
+
     }
 }
