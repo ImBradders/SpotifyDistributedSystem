@@ -17,10 +17,12 @@ namespace FrontEnd
         private IPAddress _ipAddress;
         private IPEndPoint _localEndPoint;
         private Socket _socket;
+        private byte[] buffer;
         
         public Form1()
         {
             InitializeComponent();
+            buffer = new byte[4194304];
         }
         
         private void Form1_Load(object sender, EventArgs e)
@@ -44,16 +46,27 @@ namespace FrontEnd
         {
             if (txtToSend.Text != "")
             {
-                byte[] dataToSend = Encoding.UTF8.GetBytes(txtToSend.Text);
+                int bytesToSend = Encoding.UTF8.GetBytes(txtToSend.Text, 0, txtToSend.Text.Length, buffer, 0);
                 //then send the message
-                _socket.Send(dataToSend);
+                _socket.Send(buffer, bytesToSend, SocketFlags.None);
+                ClearBuffer();
+                
+                int bytesReceived = _socket.Receive(buffer);
+                lblReceived.Text = Encoding.UTF8.GetString(buffer, 0, bytesReceived);
+            }
+        }
 
-                byte[] messageLength = new byte[1];
-                _socket.Receive(messageLength);
-                int length = messageLength[0];
-                byte[] message = new byte[length];
-                _socket.Receive(message);
-                lblReceived.Text = Encoding.UTF8.GetString(message, 0, message.Length);
+        private void ClearBuffer()
+        {
+            int countZeros = 0;
+            for (int i = 0; i < 4194304; i++)
+            {
+                countZeros = buffer[i] == 0 ? + 1 : 0;
+                if (countZeros == 5)
+                {
+                    break;
+                }
+                buffer[i] = 0;
             }
         }
     }

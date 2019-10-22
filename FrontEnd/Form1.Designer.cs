@@ -42,7 +42,7 @@
             // 
             // lblReceived
             // 
-            this.lblReceived.Location = new System.Drawing.Point(384, 149);
+            this.lblReceived.Location = new System.Drawing.Point(395, 149);
             this.lblReceived.Name = "lblReceived";
             this.lblReceived.Size = new System.Drawing.Size(143, 37);
             this.lblReceived.TabIndex = 1;
@@ -50,9 +50,9 @@
             // 
             // btnSend
             // 
-            this.btnSend.Location = new System.Drawing.Point(416, 275);
+            this.btnSend.Location = new System.Drawing.Point(417, 270);
             this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(97, 36);
+            this.btnSend.Size = new System.Drawing.Size(111, 36);
             this.btnSend.TabIndex = 2;
             this.btnSend.Text = "Send Message";
             this.btnSend.UseVisualStyleBackColor = true;
