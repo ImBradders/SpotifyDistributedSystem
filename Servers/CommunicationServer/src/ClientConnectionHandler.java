@@ -9,9 +9,10 @@ import java.net.Socket;
  * @author Bradley Davis
  */
 public class ClientConnectionHandler implements Runnable {
-    Socket socket;
-    DataInputStream dataIn;
-    DataOutputStream dataOut;
+    private Socket socket;
+    private DataInputStream dataIn;
+    private DataOutputStream dataOut;
+    private byte[] buffer = new byte[100];
 
     /**
      * This constructor allows for the socket to be passed in when creating the class so that it can communicate over
@@ -27,7 +28,7 @@ public class ClientConnectionHandler implements Runnable {
      * This allows the class to implement runnable so that the class will run as a thread when called to do so.
      */
     public void run() {
-        byte[] buffer = new byte[4194304];
+        int bytesRead = 0;
         boolean isConnected;
 
         try {
@@ -40,25 +41,23 @@ public class ClientConnectionHandler implements Runnable {
 
             while(isConnected) {
                 //get the sent data
-                dataIn.readFully(buffer);
+                buffer = new byte[100];
+                bytesRead = dataIn.read(buffer);
 
                 //convert message to string
-                String messageToProcess = MessageConverter.byteToString(buffer);
+                String messageToProcess = MessageConverter.byteToString(buffer, bytesRead);
 
                 //process messages
-                byte[] toSend;
                 switch(messageToProcess) {
                     //based on the state
                     //choose entered command
                     case "GETSERVER" :
-
+                        //here, we give the client an ip and port for a server in our list of online servers.
                         break;
 
                     case "HEARTBEAT" :
-                        toSend = MessageConverter.stringToByte("HEARTBEAT");
-                        dataOut.write(toSend.length);
-                        dataOut.flush();
-                        dataOut.write(toSend);
+                        buffer = MessageConverter.stringToByte("HEARTBEAT");
+                        dataOut.write(buffer);
                         dataOut.flush();
                         break;
 
@@ -68,10 +67,8 @@ public class ClientConnectionHandler implements Runnable {
 
                     default:
                         //state not set properly or in bad state. Reset and terminate connection
-                        toSend = MessageConverter.stringToByte("LOLEXDEE");
-                        dataOut.write(toSend.length);
-                        dataOut.flush();
-                        dataOut.write(toSend);
+                        buffer = MessageConverter.stringToByte("LOLEXDEE");
+                        dataOut.write(buffer);
                         dataOut.flush();
                         break;
                 }

@@ -13,14 +13,23 @@ public class MessageConverter {
      * @param b the byte array to be converted
      * @return a string containing only UTF 8 characters
      */
-    public static String byteToString(byte[] b) {
-        if(b == null){
+    public static String byteToString(byte[] b, int bytesToReadTo) {
+        if (b == null) {
             return "";
         }
-
-        return new String(b, StandardCharsets.UTF_8);
+        else if (b.length == bytesToReadTo) {
+            return new String(b, StandardCharsets.UTF_8);
+        }
+        else {
+            byte[] toConvert = new byte[bytesToReadTo];
+            for (int i = 0; i < bytesToReadTo; i++) {
+                toConvert[i] = b[i];
+            }
+            return new String(toConvert, StandardCharsets.UTF_8);
+        }
     }
 
+    //This could do with adjusting to see if there is a way to ensure that this does not return a new buffer but use the old one instead.
     /**
      * This method converts an string to a byte array that will only contain UTF 8 characters.
      *
@@ -28,21 +37,10 @@ public class MessageConverter {
      * @return a byte array containing the byte values of ASCII characters only
      */
     public static byte[] stringToByte(String s) {
-        if(s == null){
+        if (s == null) {
             return "".getBytes();
         }
 
         return s.getBytes(StandardCharsets.UTF_8);
-    }
-
-    /**
-     * This method converts a string to an UTF 8 string to ensure that there are no
-     *
-     * @param s the string to be converted
-     * @return a string containing only UTF 8 characters
-     */
-    public static String stringToUTF8(String s) {
-        byte[] b = MessageConverter.stringToByte(s);
-        return MessageConverter.byteToString(b);
     }
 }
