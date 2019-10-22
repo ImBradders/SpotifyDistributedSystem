@@ -35,10 +35,8 @@ public class ClientConnectionHandler implements Runnable {
             dataIn = new DataInputStream(socket.getInputStream());
             dataOut = new DataOutputStream(socket.getOutputStream());
 
-            //connected to server
+            //connected to client successfully.
             isConnected = true;
-            //dataOut.writeUTF();
-            dataOut.flush();
 
             while(isConnected) {
                 //get the sent data
@@ -62,6 +60,10 @@ public class ClientConnectionHandler implements Runnable {
                         dataOut.flush();
                         dataOut.write(toSend);
                         dataOut.flush();
+                        break;
+
+                    case "DISCONNECT" :
+
                         break;
 
                     default:
