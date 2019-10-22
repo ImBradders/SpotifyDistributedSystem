@@ -34,8 +34,8 @@ public class CommunicationServer {
 
                 Socket socket = serverSoc.accept();
 
-                ClientConnectionHandler clientConnectionHandler = new ClientConnectionHandler(socket);
-                Thread handleConnection = new Thread(clientConnectionHandler);
+                ConnectionHandler connectionHandler = new ConnectionHandler(socket);
+                Thread handleConnection = new Thread(connectionHandler);
                 handleConnection.setName(socket.getLocalSocketAddress().toString());
                 handleConnection.start();
             }
