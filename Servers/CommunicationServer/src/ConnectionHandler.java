@@ -5,13 +5,14 @@ import java.net.Socket;
 
 /**
  * Handles the connection for each client currently connected to the server.
- *  *
+ *
  * @author Bradley Davis
  */
 public class ConnectionHandler implements Runnable {
     private Socket socket;
     private DataInputStream dataIn;
     private DataOutputStream dataOut;
+    private SharedDataStore dataStore;
     private int bytesRead = 0;
     private byte[] buffer = new byte[100];
     private boolean isConnected;
@@ -31,11 +32,14 @@ public class ConnectionHandler implements Runnable {
      */
     public void run() {
         try {
+            //get the shared data store
+            dataStore = SharedDataStore.getInstance();
+
             //attempt to get data streams
             dataIn = new DataInputStream(socket.getInputStream());
             dataOut = new DataOutputStream(socket.getOutputStream());
 
-            //connected to client successfully.
+            //connected to endpoint successfully.
             isConnected = true;
 
             //before we start handling messages, get the connection type
@@ -43,6 +47,7 @@ public class ConnectionHandler implements Runnable {
             String messagePumpToRun = MessageConverter.byteToString(buffer, bytesRead);
 
             if (messagePumpToRun.equals("SERVER")) {
+
                 doServerMessagePump();
             }
             else if (messagePumpToRun.equals("CLIENT")) {
@@ -90,7 +95,7 @@ public class ConnectionHandler implements Runnable {
             }
         }
         catch (IOException e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -132,7 +137,7 @@ public class ConnectionHandler implements Runnable {
             }
         }
         catch (IOException e) {
-            //network is fucked
+            e.printStackTrace();
         }
     }
 }
