@@ -47,7 +47,6 @@ public class ConnectionHandler implements Runnable {
             String messagePumpToRun = MessageConverter.byteToString(buffer, bytesRead);
 
             if (messagePumpToRun.equals("SERVER")) {
-
                 doServerMessagePump();
             }
             else if (messagePumpToRun.equals("CLIENT")) {
@@ -77,12 +76,6 @@ public class ConnectionHandler implements Runnable {
                     //choose entered command
                     case "SERVERTYPE" :
                         //store the type of server that is on this connection
-                        break;
-
-                    case "HEARTBEAT" :
-                        buffer = MessageConverter.stringToByte("HEARTBEAT");
-                        dataOut.write(buffer);
-                        dataOut.flush();
                         break;
 
                     default:

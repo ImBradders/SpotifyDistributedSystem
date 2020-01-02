@@ -1,3 +1,5 @@
+import com.sun.security.ntlm.Server;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,14 +11,18 @@ import java.util.Random;
  */
 public class SharedDataStore {
     private static SharedDataStore classInstance = null;
-    private final List<ServerConnectionDetails> onlineServers;
+    private final List<ServerConnectionDetails> loginServers;
+    private final List<ServerConnectionDetails> streamingServers;
+    private final List<ServerConnectionDetails> storageServers;
     private final Random numberGen;
 
     /**
      * Constructor which initialises internal class variables.
      */
     private SharedDataStore() {
-        onlineServers = new ArrayList<ServerConnectionDetails>();
+        loginServers = new ArrayList<ServerConnectionDetails>();
+        streamingServers = new ArrayList<ServerConnectionDetails>();
+        storageServers = new ArrayList<ServerConnectionDetails>();
         numberGen = new Random(System.currentTimeMillis());
     }
 
@@ -37,16 +43,33 @@ public class SharedDataStore {
     }
 
     /**
-     * Safely retrieves a server from the list of currently connected servers.
+     * Safely retrieves a server from the relevant list of currently known servers.
      *
      * @return an IP address to a server.
      */
-    public ServerConnectionDetails getServer() {
+    public ServerConnectionDetails getServer(ServerType serverType) {
         ServerConnectionDetails toReturn = null;
-        synchronized (onlineServers)
-        {
-            toReturn = onlineServers.get(numberGen.nextInt(onlineServers.size()));
+        switch (serverType) {
+            case login:
+                synchronized (loginServers) {
+                    toReturn = loginServers.get(numberGen.nextInt(loginServers.size()));
+                }
+                break;
+            case storage:
+                synchronized (storageServers) {
+                    toReturn = storageServers.get(numberGen.nextInt(storageServers.size()));
+                }
+                break;
+            case streaming:
+                synchronized (streamingServers) {
+                    toReturn = streamingServers.get(numberGen.nextInt(streamingServers.size()));
+                }
+                break;
+            default:
+                //lol
+                break;
         }
+
         return toReturn;
     }
 
@@ -55,10 +78,26 @@ public class SharedDataStore {
      *
      * @param serverConnectionDetails a class representing the details of the new server.
      */
-    public void addServer(ServerConnectionDetails serverConnectionDetails) {
-        synchronized (onlineServers)
-        {
-            onlineServers.add(serverConnectionDetails);
+    public void addServer(ServerConnectionDetails serverConnectionDetails, ServerType serverType) {
+        switch (serverType) {
+            case login:
+                synchronized (loginServers) {
+                    loginServers.add(serverConnectionDetails);
+                }
+                break;
+            case storage:
+                synchronized (storageServers) {
+                    storageServers.add(serverConnectionDetails);
+                }
+                break;
+            case streaming:
+                synchronized (streamingServers) {
+                    streamingServers.add(serverConnectionDetails);
+                }
+                break;
+            default:
+                //lol
+                break;
         }
     }
 
@@ -68,9 +107,9 @@ public class SharedDataStore {
      * @param serverIp the IP address of the server to be added to the list.
      * @param portNumber the port number on which the server will listen for connections.
      */
-    public void addServer(String serverIp, int portNumber) {
+    public void addServer(String serverIp, int portNumber, ServerType serverType) {
         ServerConnectionDetails serverConnectionDetails = new ServerConnectionDetails(serverIp, portNumber);
 
-        addServer(serverConnectionDetails);
+        addServer(serverConnectionDetails, serverType);
     }
 }
