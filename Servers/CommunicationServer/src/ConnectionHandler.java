@@ -2,6 +2,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Handles the connection for each client currently connected to the server.
@@ -70,16 +73,24 @@ public class ConnectionHandler implements Runnable {
                 //convert message to string
                 String messageToProcess = MessageConverter.byteToString(buffer, bytesRead);
 
+                String[] arguments = messageToProcess.split("//s*://S*");
+
                 //process messages
-                switch(messageToProcess) {
-                    //based on the state
+                switch(arguments[0]) {
                     //choose entered command
                     case "SERVERTYPE" :
-                        //store the type of server that is on this connection
+                        //add the server to the corresponding list.
+                        dataStore.addServer(socket.getRemoteSocketAddress().toString(), socket.getPort(),
+                                Enum.valueOf(ServerType.class, arguments[1]));
+
+                        //inform the user that we have stored the server.
+                        buffer = MessageConverter.stringToByte("TYPESTORED");
+                        dataOut.write(buffer);
+                        dataOut.flush();
                         break;
 
                     default:
-                        //state not set properly or in bad state. Reset and terminate connection
+                        //message sent was unsupported.
                         buffer = MessageConverter.stringToByte("MESSAGEUNSUPPORTED");
                         dataOut.write(buffer);
                         dataOut.flush();
