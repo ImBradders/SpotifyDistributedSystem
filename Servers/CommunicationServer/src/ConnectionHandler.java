@@ -40,7 +40,7 @@ public class ConnectionHandler implements Runnable {
             dataOut = new DataOutputStream(socket.getOutputStream());
 
             //connected to endpoint successfully.
-            connectionState = ConnectionState.connected;
+            connectionState = ConnectionState.CONNECTED;
 
             //before we start handling messages, get the connection type
             bytesRead = dataIn.read(buffer);
@@ -55,7 +55,7 @@ public class ConnectionHandler implements Runnable {
         }
         catch(IOException ioe) {
             //if not in quitting state, throw error
-            if (connectionState != ConnectionState.disconnecting) {
+            if (connectionState != ConnectionState.DISCONNECTING) {
                 ioe.printStackTrace();
             }
             else { //otherwise, run to end
@@ -66,7 +66,7 @@ public class ConnectionHandler implements Runnable {
 
     void doServerMessagePump() {
         try {
-            while (connectionState == ConnectionState.connected) {
+            while (connectionState == ConnectionState.CONNECTED) {
                 //get the sent data
                 buffer = new byte[100];
                 bytesRead = dataIn.read(buffer);
@@ -91,7 +91,7 @@ public class ConnectionHandler implements Runnable {
                         break;
 
                     case "DISCONNECT" :
-                        connectionState = ConnectionState.disconnecting;
+                        connectionState = ConnectionState.DISCONNECTING;
                         buffer = MessageConverter.stringToByte("DISCONNECT");
                         dataOut.write(buffer);
                         break;
@@ -113,7 +113,7 @@ public class ConnectionHandler implements Runnable {
 
     void doClientMessagePump() {
         try {
-            while (connectionState == ConnectionState.connected) {
+            while (connectionState == ConnectionState.CONNECTED) {
                 //get the sent data
                 buffer = new byte[100];
                 bytesRead = dataIn.read(buffer);
@@ -143,7 +143,7 @@ public class ConnectionHandler implements Runnable {
                         break;
 
                     case "DISCONNECT" :
-                        connectionState = ConnectionState.disconnecting;
+                        connectionState = ConnectionState.DISCONNECTING;
                         buffer = MessageConverter.stringToByte("DISCONNECT");
                         dataOut.write(buffer);
                         break;

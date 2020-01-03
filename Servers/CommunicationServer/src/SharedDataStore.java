@@ -1,5 +1,3 @@
-import com.sun.security.ntlm.Server;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -50,17 +48,17 @@ public class SharedDataStore {
     public ServerConnectionDetails getServer(ServerType serverType) {
         ServerConnectionDetails toReturn = null;
         switch (serverType) {
-            case login:
+            case LOGIN:
                 synchronized (loginServers) {
                     toReturn = loginServers.get(numberGen.nextInt(loginServers.size()));
                 }
                 break;
-            case storage:
+            case STORAGE:
                 synchronized (storageServers) {
                     toReturn = storageServers.get(numberGen.nextInt(storageServers.size()));
                 }
                 break;
-            case streaming:
+            case STREAMING:
                 synchronized (streamingServers) {
                     toReturn = streamingServers.get(numberGen.nextInt(streamingServers.size()));
                 }
@@ -80,17 +78,17 @@ public class SharedDataStore {
      */
     public void addServer(ServerConnectionDetails serverConnectionDetails, ServerType serverType) {
         switch (serverType) {
-            case login:
+            case LOGIN:
                 synchronized (loginServers) {
                     loginServers.add(serverConnectionDetails);
                 }
                 break;
-            case storage:
+            case STORAGE:
                 synchronized (storageServers) {
                     storageServers.add(serverConnectionDetails);
                 }
                 break;
-            case streaming:
+            case STREAMING:
                 synchronized (streamingServers) {
                     streamingServers.add(serverConnectionDetails);
                 }

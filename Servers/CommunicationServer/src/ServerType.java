@@ -4,7 +4,7 @@
  * @author Bradley Davis
  */
 public enum ServerType {
-    login,
-    streaming,
-    storage
+    LOGIN,
+    STREAMING,
+    STORAGE
 }
