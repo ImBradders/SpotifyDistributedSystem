@@ -90,6 +90,19 @@ public class ConnectionHandler implements Runnable {
                         dataOut.write(buffer);
                         break;
 
+                    case "GETSERVER" :
+                        //here, we give the client an ip and port for a server in our list of online servers.
+                        if (arguments[1].equals("STORAGE")) {
+                            ServerConnectionDetails serverConnectionDetails = dataStore.getServer(Enum.valueOf(ServerType.class, arguments[1]));
+                            buffer = MessageConverter.stringToByte("IP : " + serverConnectionDetails.getIpAddress() +
+                                    " : PORT : " + serverConnectionDetails.getPortNumber());
+                        }
+                        else { //a server has tried to request something that they should not.
+                            buffer = MessageConverter.stringToByte("ERROR : Incorrect server type.");
+                        }
+                        dataOut.write(buffer);
+                        break;
+
                     case "DISCONNECT" :
                         connectionState = ConnectionState.DISCONNECTING;
                         buffer = MessageConverter.stringToByte("DISCONNECT");
@@ -130,10 +143,14 @@ public class ConnectionHandler implements Runnable {
                     //choose entered command
                     case "GETSERVER" :
                         //here, we give the client an ip and port for a server in our list of online servers.
-                        ServerConnectionDetails serverConnectionDetails = dataStore.getServer(Enum.valueOf(ServerType.class, arguments[1]));
-                        buffer = MessageConverter.stringToByte("IP : " + serverConnectionDetails.getIpAddress());
-                        dataOut.write(buffer);
-                        buffer = MessageConverter.stringToByte("PORT : " + serverConnectionDetails.getPortNumber());
+                        if (arguments[1].equals("LOGIN") || arguments[1].equals("STREAMING")) {
+                            ServerConnectionDetails serverConnectionDetails = dataStore.getServer(Enum.valueOf(ServerType.class, arguments[1]));
+                            buffer = MessageConverter.stringToByte("IP : " + serverConnectionDetails.getIpAddress() +
+                                    " : PORT : " + serverConnectionDetails.getPortNumber());
+                        }
+                        else { //a client has tried to request something that they should not.
+                            buffer = MessageConverter.stringToByte("ERROR : Incorrect server type.");
+                        }
                         dataOut.write(buffer);
                         break;
 

@@ -10,6 +10,7 @@ import java.net.SocketException;
  */
 public class CommunicationServer {
     private int portNumber;
+
     /**
      * Constructor to start the communication server.
      *

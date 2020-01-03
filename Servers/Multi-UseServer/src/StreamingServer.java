@@ -38,6 +38,10 @@ public class StreamingServer extends BaseServer {
                 System.out.println("Awaiting clients to stream to...");
 
                 Socket socket = serverSocket.accept();
+
+                StreamingConnectionHandler streamingConnectionHandler = new StreamingConnectionHandler(socket);
+                Thread connectionHandler = new Thread(streamingConnectionHandler);
+                connectionHandler.start();
             }
         }
         catch (IOException e) {
@@ -68,7 +72,10 @@ public class StreamingServer extends BaseServer {
             int messageSize = 0;
             String messageReceived = null;
 
-            communicationServerOutput.write(MessageConverter.stringToByte("SERVERTYPE : streaming"));
+            communicationServerOutput.write(MessageConverter.stringToByte("SERVER"));
+            communicationServerOutput.flush();
+
+            communicationServerOutput.write(MessageConverter.stringToByte("SERVERTYPE : STREAMING"));
             communicationServerOutput.flush();
 
             messageSize = communicationServerInput.read(buffer);
