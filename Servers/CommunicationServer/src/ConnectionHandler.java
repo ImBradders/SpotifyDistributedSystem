@@ -2,9 +2,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Handles the connection for each client currently connected to the server.
@@ -18,7 +15,7 @@ public class ConnectionHandler implements Runnable {
     private SharedDataStore dataStore;
     private int bytesRead = 0;
     private byte[] buffer = new byte[100];
-    private boolean isConnected;
+    private ConnectionState connectionState;
 
     /**
      * This constructor allows for the socket to be passed in when creating the class so that it can communicate over
@@ -43,7 +40,7 @@ public class ConnectionHandler implements Runnable {
             dataOut = new DataOutputStream(socket.getOutputStream());
 
             //connected to endpoint successfully.
-            isConnected = true;
+            connectionState = ConnectionState.connected;
 
             //before we start handling messages, get the connection type
             bytesRead = dataIn.read(buffer);
@@ -58,14 +55,18 @@ public class ConnectionHandler implements Runnable {
         }
         catch(IOException ioe) {
             //if not in quitting state, throw error
-
-            //otherwise, run to end
+            if (connectionState != ConnectionState.disconnecting) {
+                ioe.printStackTrace();
+            }
+            else { //otherwise, run to end
+                System.out.println("Connection to " + socket.getInetAddress().getHostAddress() + " closing.");
+            }
         }
     }
 
     void doServerMessagePump() {
         try {
-            while (isConnected) {
+            while (connectionState == ConnectionState.connected) {
                 //get the sent data
                 buffer = new byte[100];
                 bytesRead = dataIn.read(buffer);
@@ -73,6 +74,7 @@ public class ConnectionHandler implements Runnable {
                 //convert message to string
                 String messageToProcess = MessageConverter.byteToString(buffer, bytesRead);
 
+                //this particular regex will split by any given number of spaces plus a colon.
                 String[] arguments = messageToProcess.split("//s*://S*");
 
                 //process messages
@@ -80,22 +82,28 @@ public class ConnectionHandler implements Runnable {
                     //choose entered command
                     case "SERVERTYPE" :
                         //add the server to the corresponding list.
-                        dataStore.addServer(socket.getRemoteSocketAddress().toString(), socket.getPort(),
+                        dataStore.addServer(socket.getInetAddress().getHostAddress(), socket.getPort(),
                                 Enum.valueOf(ServerType.class, arguments[1]));
 
                         //inform the user that we have stored the server.
                         buffer = MessageConverter.stringToByte("TYPESTORED");
                         dataOut.write(buffer);
-                        dataOut.flush();
+                        break;
+
+                    case "DISCONNECT" :
+                        connectionState = ConnectionState.disconnecting;
+                        buffer = MessageConverter.stringToByte("DISCONNECT");
+                        dataOut.write(buffer);
                         break;
 
                     default:
                         //message sent was unsupported.
                         buffer = MessageConverter.stringToByte("MESSAGEUNSUPPORTED");
                         dataOut.write(buffer);
-                        dataOut.flush();
                         break;
                 }
+                //ensure all data is flushed before we start to handle another message.
+                dataOut.flush();
             }
         }
         catch (IOException e) {
@@ -105,7 +113,7 @@ public class ConnectionHandler implements Runnable {
 
     void doClientMessagePump() {
         try {
-            while (isConnected) {
+            while (connectionState == ConnectionState.connected) {
                 //get the sent data
                 buffer = new byte[100];
                 bytesRead = dataIn.read(buffer);
@@ -113,31 +121,41 @@ public class ConnectionHandler implements Runnable {
                 //convert message to string
                 String messageToProcess = MessageConverter.byteToString(buffer, bytesRead);
 
+                //this particular regex will split by any given number of spaces plus a colon.
+                String[] arguments = messageToProcess.split("//s*://S*");
+
                 //process messages
-                switch(messageToProcess) {
+                switch(arguments[0]) {
                     //based on the state
                     //choose entered command
                     case "GETSERVER" :
                         //here, we give the client an ip and port for a server in our list of online servers.
+                        ServerConnectionDetails serverConnectionDetails = dataStore.getServer(Enum.valueOf(ServerType.class, arguments[1]));
+                        buffer = MessageConverter.stringToByte("IP : " + serverConnectionDetails.getIpAddress());
+                        dataOut.write(buffer);
+                        buffer = MessageConverter.stringToByte("PORT : " + serverConnectionDetails.getPortNumber());
+                        dataOut.write(buffer);
                         break;
 
                     case "HEARTBEAT" :
                         buffer = MessageConverter.stringToByte("HEARTBEAT");
                         dataOut.write(buffer);
-                        dataOut.flush();
                         break;
 
                     case "DISCONNECT" :
-
+                        connectionState = ConnectionState.disconnecting;
+                        buffer = MessageConverter.stringToByte("DISCONNECT");
+                        dataOut.write(buffer);
                         break;
 
                     default:
                         //state not set properly or in bad state. Reset and terminate connection
                         buffer = MessageConverter.stringToByte("MESSAGEUNSUPPORTED");
                         dataOut.write(buffer);
-                        dataOut.flush();
                         break;
                 }
+                //ensure all data is flushed before we start handling the next message.
+                dataOut.flush();
             }
         }
         catch (IOException e) {

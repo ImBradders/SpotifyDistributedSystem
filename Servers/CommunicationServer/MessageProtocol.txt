@@ -12,7 +12,7 @@ Description
 HEARTBEAT | HEARTBEAT
 A message to check to ensure that the connection is still alive, as if the client hasn't sent a message for a considerable time.
 
-GETSERVER | an IP address to the server which will handle their music streaming
+GETSERVER | an IP address and port number in two separate responses to the server which will handle their music streaming
 A message to ask for a move to a music service provider.
 
 DISCONNECT | DISCONNECT
@@ -28,6 +28,9 @@ Description
 
 SERVERTYPE | TYPESTORED
 Allows the remote server to tell the Communication Server what type of server it is.
+
+DISCONNECT | DISCONNECT
+A message to initiate a disconnect from the server. This will close the connection to the server.
 
 [Unsupported Message] | MESSAGEUNSUPPORTED
 If the server sends a message that is not supported, MESSAGEUNSUPPORTED will be returned.
