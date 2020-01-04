@@ -1,28 +1,25 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * Class which will be used to stream music to the client.
+ * This server type will be used as bulk storage for the system
  *
  * @author Bradley Davis
  */
-public class StreamingServer extends BaseServer {
-
-    public StreamingServer(int portNumber) {
-        super(portNumber);
-    }
+public class StorageServer {
+    private int portNumber;
 
     /**
-     * Starts the server indication to the communication server that this is a streaming server.
+     * Constructor to create the class with all internal variables set up.
      *
-     * @return whether or not the server started successfully.
+     * @param portNumber the port number for this server to listen on.
      */
-    @Override
-    public boolean start()
-    {
+    public StorageServer(int portNumber) {
+        this.portNumber = portNumber;
+    }
+
+    public boolean start() {
         boolean isRunning = true;
         try {
             boolean communicationServerContacted = contactCommunicationServer();
@@ -39,9 +36,9 @@ public class StreamingServer extends BaseServer {
 
                 Socket socket = serverSocket.accept();
 
-                StreamingConnectionHandler streamingConnectionHandler = new StreamingConnectionHandler(socket);
-                Thread connectionHandler = new Thread(streamingConnectionHandler);
-                connectionHandler.start();
+                ConnectionHandler connectionHandler = new ConnectionHandler(socket);
+                Thread handler = new Thread(connectionHandler);
+                handler.start();
             }
         }
         catch (IOException e) {
@@ -52,12 +49,12 @@ public class StreamingServer extends BaseServer {
         return true;
     }
 
+
     /**
      * Sends the communication to the communication server to tell it that this is a streaming server and that it exists.
      *
      * @return whether or not the communication was successful.
      */
-    @Override
     protected boolean contactCommunicationServer() {
         ConnectionState connectionState = null;
         try {
@@ -110,5 +107,50 @@ public class StreamingServer extends BaseServer {
         }
 
         return true;
+    }
+
+    private ServerConnectionDetails getCommunicationServerDetails() throws IOException {
+        String ipAddress = null;
+        int portNumber = 0;
+        try {
+            File file = new File("CommunicationServerIP.txt");
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String currentLine = bufferedReader.readLine();
+
+            while (currentLine != null) {
+                //this particular regex will split by any given number of spaces plus a colon.
+                String[] lineData = currentLine.split("//s*://S*");
+
+                switch (lineData[0]) {
+                    case "IP":
+                        ipAddress = lineData[1];
+                        break;
+                    case "PORT":
+                        portNumber = Integer.parseInt(lineData[1]);
+                        break;
+                    default:
+                        System.out.println("Part of CommunicationServerIP.txt was unreadable.");
+                        break;
+                }
+
+                currentLine = bufferedReader.readLine();
+            }
+
+            fileReader.close();
+        } catch (NumberFormatException nfe) {
+            System.out.println("Unable to read communication server port number as integer - shutting down.");
+            throw new IOException("Error reading communication server port number from file.");
+        } catch (IOException ioe) {
+            System.out.println("Unable to load information for communication server - shutting down.");
+            throw ioe;
+        }
+
+        if (ipAddress == null || portNumber == 0) {
+            System.out.println("Server or port number was missing - shutting down.");
+            throw new IOException("Server or port number was missing/");
+        }
+
+        return new ServerConnectionDetails(ipAddress, portNumber);
     }
 }

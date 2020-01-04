@@ -21,7 +21,7 @@ public class MultiUseServerBootstrap {
         int len = args.length;
         len = len > 3 ? 3 : len; //cap the length at 3 for the switch statement.
 
-        switch (args.length) {
+        switch (len) {
             case 3:
                 System.out.println("More than 2 arguments provided - ignoring extraneous args.");
             case 2: //type and port provided
