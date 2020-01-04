@@ -8,10 +8,10 @@ import java.net.Socket;
  * @author Bradley Davis
  */
 public class ConnectionHandler implements Runnable {
-    protected Socket socket;
-    protected DataInputStream dataInputStream;
-    protected DataOutputStream dataOutputStream;
-    protected ConnectionState connectionState;
+    private Socket socket;
+    private DataInputStream dataInputStream;
+    private DataOutputStream dataOutputStream;
+    private ConnectionState connectionState;
 
     protected ConnectionHandler(Socket socket) {
         this.socket = socket;

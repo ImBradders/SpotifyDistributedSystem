@@ -1,5 +1,6 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -25,6 +26,20 @@ public class StreamingServer extends BaseServer {
     {
         boolean isRunning = true;
         try {
+            //Set up storage
+            String fileSeparator = System.getProperty("file.separator");
+            File file = new File(System.getProperty("user.dir") + fileSeparator + "MusicCache");
+            if (!file.exists()) {
+                file = file.mkdirs() ? file : new File(System.getProperty("user.dir"));
+                // if the file didn't get created, resort to a location that does exist.
+            }
+            String cachedStorage = file.toString();
+
+            if (!(file.canWrite() && file.canRead())) {
+                //we cannot read and write to the specified file location - therefore we are useless.
+                return false;
+            }
+
             boolean communicationServerContacted = contactCommunicationServer();
 
             if (!communicationServerContacted) {
@@ -39,7 +54,7 @@ public class StreamingServer extends BaseServer {
 
                 Socket socket = serverSocket.accept();
 
-                StreamingConnectionHandler streamingConnectionHandler = new StreamingConnectionHandler(socket);
+                StreamingConnectionHandler streamingConnectionHandler = new StreamingConnectionHandler(socket, cachedStorage);
                 Thread connectionHandler = new Thread(streamingConnectionHandler);
                 connectionHandler.start();
             }

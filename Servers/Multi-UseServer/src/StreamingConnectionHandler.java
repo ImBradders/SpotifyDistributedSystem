@@ -21,15 +21,10 @@ public class StreamingConnectionHandler extends ConnectionHandler {
     private int bytesRead = 0;
     private byte[] buffer = new byte[200];
 
-    public StreamingConnectionHandler(Socket socket) {
+    public StreamingConnectionHandler(Socket socket, String cachedStorageLocation) {
         super(socket);
+        cachedStorage = cachedStorageLocation;
         fileSeparator = System.getProperty("file.separator");
-        File file = new File(System.getProperty("user.dir") + fileSeparator + "MusicCache");
-        if (!file.exists()) {
-            file = file.mkdirs() ? file : new File(System.getProperty("user.dir"));
-            // if the file didn't get created, resort to a location that does exist.
-        }
-        cachedStorage = file.toString();
         songQueue = new StreamingSongQueue();
     }
 

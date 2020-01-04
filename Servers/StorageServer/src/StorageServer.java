@@ -22,6 +22,23 @@ public class StorageServer {
     public boolean start() {
         boolean isRunning = true;
         try {
+            //Set up/check storage
+            String fileSeparator = System.getProperty("file.separator");
+            File file = new File(System.getProperty("user.dir") + fileSeparator + "MusicBank");
+            if (!file.exists()) {
+                //we were unable to find the music storage
+                if (!file.mkdirs()) {
+                    //we were unable to create the music storage.
+                    return false;
+                }
+            }
+            String cachedStorage = file.toString();
+
+            if (!(file.canWrite() && file.canRead())) {
+                //we cannot read and write to the specified file location - therefore we are useless.
+                return false;
+            }
+
             boolean communicationServerContacted = contactCommunicationServer();
 
             if (!communicationServerContacted) {
