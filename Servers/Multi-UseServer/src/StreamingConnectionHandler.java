@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Random;
 
 //Help: https://stackoverflow.com/questions/17044644/sending-audio-stream-over-tcp-unsupportedaudiofileexception
@@ -27,7 +26,8 @@ public class StreamingConnectionHandler extends ConnectionHandler {
         fileSeparator = System.getProperty("file.separator");
         File file = new File(System.getProperty("user.dir") + fileSeparator + "MusicCache");
         if (!file.exists()) {
-            file = file.mkdirs() ? file : new File(System.getProperty("user.dir")); // if the file didn't get created, resort to a location that does exist.
+            file = file.mkdirs() ? file : new File(System.getProperty("user.dir"));
+            // if the file didn't get created, resort to a location that does exist.
         }
         cachedStorage = file.toString();
         songQueue = new StreamingSongQueue();
@@ -50,6 +50,9 @@ public class StreamingConnectionHandler extends ConnectionHandler {
         }
     }
 
+    /**
+     * The message pump to process each message which is sent by the client.
+     */
     private void doMessagePump() {
         try {
             while (connectionState != ConnectionState.DISCONNECTING) {
@@ -69,9 +72,9 @@ public class StreamingConnectionHandler extends ConnectionHandler {
                         break;
 
                     case "SONG" :
-                        //TODO modify this so that it searches externally first and gets a name back. Once received, check for file locally, if not there, get it.
                         //search list of files to see if any of them contain the search term
-
+                        buffer = MessageConverter.stringToByte(searchSongs(arguments[1]));
+                        dataOutputStream.write(buffer);
                         break;
 
                     default:
@@ -89,7 +92,14 @@ public class StreamingConnectionHandler extends ConnectionHandler {
         }
     }
 
-    private String SearchSongs(String songToFind) {
+    //TODO modify this so that it searches externally first and gets a name back. Once received, check for file locally, if not there, get it.
+    /**
+     * Method which searches the list of songs.
+     *
+     * @param songToFind the song which the user is searching for.
+     * @return the message to be returned to the client.
+     */
+    private String searchSongs(String songToFind) {
         Random randomNumberGenerator = new Random(System.currentTimeMillis());
         File songLocation = new File(cachedStorage);
         String[] songs = songLocation.list();

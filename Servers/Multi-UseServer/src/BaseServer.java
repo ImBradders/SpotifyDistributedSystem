@@ -25,7 +25,7 @@ public class BaseServer {
      *
      * @return whether the server was successfully started or not.
      */
-    protected boolean Start() {
+    protected boolean start() {
         return false;
     }
 

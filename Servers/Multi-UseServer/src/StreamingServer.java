@@ -21,7 +21,7 @@ public class StreamingServer extends BaseServer {
      * @return whether or not the server started successfully.
      */
     @Override
-    public boolean Start()
+    public boolean start()
     {
         boolean isRunning = true;
         try {
