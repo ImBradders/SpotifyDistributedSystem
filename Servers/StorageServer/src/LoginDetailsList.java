@@ -22,6 +22,12 @@ public class LoginDetailsList {
         return instance;
     }
 
+    /**
+     * Check to see if a given username is already in use within the system.
+     *
+     * @param username the username to validate
+     * @return whether or not the given username is already in use in the system.
+     */
     public synchronized boolean userExists(String username) {
         for (LoginDetails user : loginDetails) {
             if (user.getUsername().equals(username)) {
@@ -32,6 +38,12 @@ public class LoginDetailsList {
         return false;
     }
 
+    /**
+     * Determines whether the user exists and if they do, whether the password that has been provided is correct or not.
+     *
+     * @param userToVerify the username and password which have been entered.
+     * @return whether or not the user was successfully validated.
+     */
     public synchronized boolean verifyUser(LoginDetails userToVerify) {
         for (LoginDetails user : loginDetails) {
             if (user.getUsername().equals(userToVerify.getUsername())) {
@@ -42,13 +54,32 @@ public class LoginDetailsList {
         return false;
     }
 
-    public void addUser(String username, String password) {
+    /**
+     * Allows for users to be added to the system so that new accounts can be created.
+     *
+     * @param username the username which the user wishes to use.
+     * @param password the password which the user wishes to use.
+     * @return whether the user was added or not. Will return false if a given username already exists.
+     */
+    public boolean addUser(String username, String password) {
+        if (userExists(username)) {
+            return false;
+        }
+
         LoginDetails userToAdd = new LoginDetails(username, password);
         synchronized (loginDetails) {
             loginDetails.add(userToAdd);
         }
+
+        return true;
     }
 
+    /**
+     * Loads the list of usernames and passwords from the file.
+     *
+     * @param filePath the path at which the file can be found.
+     * @return whether the file could be loaded or not.
+     */
     public boolean loadFromFile(String filePath) {
         File userDetailsFile = new File(filePath);
         try {
