@@ -40,7 +40,9 @@ public class StreamingServer extends BaseServer {
                 return false;
             }
 
-            boolean communicationServerContacted = contactCommunicationServer();
+            ServerConnectionDetails communicationServerDetails = getCommunicationServerDetails();
+
+            boolean communicationServerContacted = contactCommunicationServer(communicationServerDetails);
 
             if (!communicationServerContacted) {
                 return false;
@@ -54,7 +56,7 @@ public class StreamingServer extends BaseServer {
 
                 Socket socket = serverSocket.accept();
 
-                StreamingConnectionHandler streamingConnectionHandler = new StreamingConnectionHandler(socket, cachedStorage);
+                StreamingConnectionHandler streamingConnectionHandler = new StreamingConnectionHandler(socket, cachedStorage, communicationServerDetails);
                 Thread connectionHandler = new Thread(streamingConnectionHandler);
                 connectionHandler.start();
             }
@@ -73,11 +75,10 @@ public class StreamingServer extends BaseServer {
      * @return whether or not the communication was successful.
      */
     @Override
-    protected boolean contactCommunicationServer() {
+    protected boolean contactCommunicationServer(ServerConnectionDetails connectionDetails) {
         ConnectionState connectionState = null;
         try {
-            ServerConnectionDetails communicationServerDetails = getCommunicationServerDetails();
-            Socket communicationServerConnection = new Socket(communicationServerDetails.getIpAddress(), communicationServerDetails.getPortNumber());
+            Socket communicationServerConnection = new Socket(connectionDetails.getIpAddress(), connectionDetails.getPortNumber());
             DataOutputStream communicationServerOutput = new DataOutputStream(communicationServerConnection.getOutputStream());
             DataInputStream communicationServerInput = new DataInputStream(communicationServerConnection.getInputStream());
             connectionState = ConnectionState.CONNECTED;

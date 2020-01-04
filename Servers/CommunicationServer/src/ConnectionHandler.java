@@ -90,11 +90,16 @@ public class ConnectionHandler implements Runnable {
                         break;
 
                     case "GETSERVER" :
-                        //here, we give the client an ip and port for a server in our list of online servers.
+                        //here, we give the server an ip and port for a server in our list of online servers.
                         if (arguments[1].equals("STORAGE")) {
                             ServerConnectionDetails serverConnectionDetails = dataStore.getServer(Enum.valueOf(ServerType.class, arguments[1]));
-                            buffer = MessageConverter.stringToByte("IP : " + serverConnectionDetails.getIpAddress() +
-                                    " : PORT : " + serverConnectionDetails.getPortNumber());
+                            if (serverConnectionDetails == null) {
+                                buffer = MessageConverter.stringToByte("ERROR : No storage server exists.");
+                            }
+                            else {
+                                buffer = MessageConverter.stringToByte("IP : " + serverConnectionDetails.getIpAddress() +
+                                        " : PORT : " + serverConnectionDetails.getPortNumber());
+                            }
                         }
                         else { //a server has tried to request something that they should not.
                             buffer = MessageConverter.stringToByte("ERROR : Incorrect server type.");
@@ -143,8 +148,13 @@ public class ConnectionHandler implements Runnable {
                         //here, we give the client an ip and port for a server in our list of online servers.
                         if (arguments[1].equals("LOGIN") || arguments[1].equals("STREAMING")) {
                             ServerConnectionDetails serverConnectionDetails = dataStore.getServer(Enum.valueOf(ServerType.class, arguments[1]));
-                            buffer = MessageConverter.stringToByte("IP : " + serverConnectionDetails.getIpAddress() +
-                                    " : PORT : " + serverConnectionDetails.getPortNumber());
+                            if (serverConnectionDetails == null) {
+                                buffer = MessageConverter.stringToByte("ERROR : No server of type '" + arguments[1] + "' exists.");
+                            }
+                            else {
+                                buffer = MessageConverter.stringToByte("IP : " + serverConnectionDetails.getIpAddress() +
+                                        " : PORT : " + serverConnectionDetails.getPortNumber());
+                            }
                         }
                         else { //a client has tried to request something that they should not.
                             buffer = MessageConverter.stringToByte("ERROR : Incorrect server type.");

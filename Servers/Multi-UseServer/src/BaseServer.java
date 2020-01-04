@@ -34,7 +34,7 @@ public class BaseServer {
      *
      * @return whether the communication was successful or not.
      */
-    protected boolean contactCommunicationServer() {
+    protected boolean contactCommunicationServer(ServerConnectionDetails connectionDetails) {
         return false;
     }
 
