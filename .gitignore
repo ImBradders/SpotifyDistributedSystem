@@ -7,5 +7,6 @@
 
 # don't track extra java shit
 *.classpath
+*.class
 *.project
 *.iml
