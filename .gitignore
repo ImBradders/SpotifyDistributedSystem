@@ -15,4 +15,4 @@
 *.iml
 
 # don't track the music folder
-*.music/
+music/
