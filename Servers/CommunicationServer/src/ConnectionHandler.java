@@ -74,8 +74,7 @@ public class ConnectionHandler implements Runnable {
                 //convert message to string
                 String messageToProcess = MessageConverter.byteToString(buffer, bytesRead);
 
-                //this particular regex will split by any given number of spaces plus a colon.
-                String[] arguments = messageToProcess.split("//s*://S*");
+                String[] arguments = messageToProcess.split(" : ");
 
                 //process messages
                 switch(arguments[0]) {
@@ -134,8 +133,7 @@ public class ConnectionHandler implements Runnable {
                 //convert message to string
                 String messageToProcess = MessageConverter.byteToString(buffer, bytesRead);
 
-                //this particular regex will split by any given number of spaces plus a colon.
-                String[] arguments = messageToProcess.split("//s*://S*");
+                String[] arguments = messageToProcess.split(" : ");
 
                 //process messages
                 switch(arguments[0]) {

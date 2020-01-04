@@ -48,8 +48,7 @@ public class BaseServer {
             String currentLine = bufferedReader.readLine();
 
             while (currentLine != null) {
-                //this particular regex will split by any given number of spaces plus a colon.
-                String[] lineData = currentLine.split("//s*://S*");
+                String[] lineData = currentLine.split(" : ");
 
                 switch (lineData[0]) {
                     case "IP" :

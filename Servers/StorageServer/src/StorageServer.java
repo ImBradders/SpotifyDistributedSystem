@@ -32,7 +32,7 @@ public class StorageServer {
                     return false;
                 }
             }
-            String cachedStorage = file.toString();
+            String cachedStorage = file.toString() + fileSeparator;
 
             if (!(file.canWrite() && file.canRead())) {
                 //we cannot read and write to the specified file location - therefore we are useless.
@@ -44,6 +44,10 @@ public class StorageServer {
             if (!communicationServerContacted) {
                 return false;
             }
+
+            SongListManager songListManager = new SongListManager(cachedStorage);
+            Thread songListMgr = new Thread(songListManager);
+            songListMgr.start();
 
             //create server socket for client communication
             ServerSocket serverSocket = new ServerSocket(portNumber);
@@ -89,7 +93,7 @@ public class StorageServer {
             communicationServerOutput.write(MessageConverter.stringToByte("SERVER"));
             communicationServerOutput.flush();
 
-            communicationServerOutput.write(MessageConverter.stringToByte("SERVERTYPE : STREAMING"));
+            communicationServerOutput.write(MessageConverter.stringToByte("SERVERTYPE : STORAGE"));
             communicationServerOutput.flush();
 
             messageSize = communicationServerInput.read(buffer);
@@ -136,8 +140,7 @@ public class StorageServer {
             String currentLine = bufferedReader.readLine();
 
             while (currentLine != null) {
-                //this particular regex will split by any given number of spaces plus a colon.
-                String[] lineData = currentLine.split("//s*://S*");
+                String[] lineData = currentLine.split(" : ");
 
                 switch (lineData[0]) {
                     case "IP":
@@ -155,17 +158,19 @@ public class StorageServer {
             }
 
             fileReader.close();
-        } catch (NumberFormatException nfe) {
+        }
+        catch (NumberFormatException nfe) {
             System.out.println("Unable to read communication server port number as integer - shutting down.");
             throw new IOException("Error reading communication server port number from file.");
-        } catch (IOException ioe) {
+        }
+        catch (IOException ioe) {
             System.out.println("Unable to load information for communication server - shutting down.");
             throw ioe;
         }
 
         if (ipAddress == null || portNumber == 0) {
             System.out.println("Server or port number was missing - shutting down.");
-            throw new IOException("Server or port number was missing/");
+            throw new IOException("Server or port number was missing.");
         }
 
         return new ServerConnectionDetails(ipAddress, portNumber);

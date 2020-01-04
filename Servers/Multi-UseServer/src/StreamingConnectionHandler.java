@@ -57,8 +57,7 @@ public class StreamingConnectionHandler extends ConnectionHandler {
                 //convert message to string for easier handling
                 String messageToProcess = MessageConverter.byteToString(buffer, bytesRead);
 
-                //this particular regex will split by any given number of spaces plus a colon.
-                String[] arguments = messageToProcess.split("//s*://S*");
+                String[] arguments = messageToProcess.split(" : ");
 
                 switch (arguments[0]) {
                     case "DISCONNECT" :

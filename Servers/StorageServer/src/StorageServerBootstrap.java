@@ -50,16 +50,19 @@ public class StorageServerBootstrap {
             return -1;
         }
 
-        if (portNumber < 49152) { //check port too high
-            System.out.println("Port must be greater than 49152.");
-            System.out.println("Please restart with a new port number.");
-            return -1;
+        if (portNumber != 0) {
+            if (portNumber < 49152) { //check port too high
+                System.out.println("Port must be greater than 49152.");
+                System.out.println("Please restart with a new port number.");
+                return -1;
+            }
+            else if (portNumber > 65535) { //check port too low
+                System.out.println("Port must be less than 65535.");
+                System.out.println("Please restart with a new port number.");
+                return -1;
+            }
         }
-        else if (portNumber > 65535) { //check port too low
-            System.out.println("Port must be less than 65535.");
-            System.out.println("Please restart with a new port number.");
-            return -1;
-        }
+
 
         //if necessary, this can be changed to create on any available port using new ServerSocket(0).
         //the port of this could then be extracted and used instead of needing one to be provided.
