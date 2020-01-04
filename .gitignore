@@ -5,6 +5,9 @@
 # don't track any exes
 *.exe
 
+#don't track any output folders
+*.out/
+
 # don't track extra java shit
 *.classpath
 *.class
