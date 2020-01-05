@@ -34,3 +34,24 @@ Adds a song to this user's current queue. If the song could not be found, "ERROR
 REMOVE : [search term] | REMOVED : [song title]
 
 Removes a song from the client's current queue. If the song cannot be found within the queue, "ERROR : not found" shall be returned instead.
+
+## Login Server
+
+### Create Account
+
+CREATE : [username] : [password] | ADDED or ERROR
+
+Creates an account for the username and password provided.
+Possible errors include:
+- Username already exists
+- Unable to create user
+
+### Login
+
+LOGIN : [username] : [password] | AUTH : [token] or ERROR
+
+Logs a user into their account providing them with an auth token which they can use later.
+Possible errors include:
+- User doesn't exist
+- Password doesn't match
+- Unable to login.
