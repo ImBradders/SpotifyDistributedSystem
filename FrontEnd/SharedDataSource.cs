@@ -15,10 +15,13 @@ namespace FrontEnd
         private static SharedDataSource _instance = null;
         private Queue<string> _messageQueue;
         public bool SocketDied { get; set; } = false;
+        private ServerType _currentServerType;
         public ClientState ClientState { get; set; }
         public string ClientKey { get; set; }
         public event EventHandler InterfaceUpdate;
         private Queue<string> _userQueue;
+        
+        
 
         /// <summary>
         /// Constructor for the singleton class to allow for the queues to be created.
@@ -36,6 +39,12 @@ namespace FrontEnd
         public static SharedDataSource GetInstance()
         {
             return _instance ?? (_instance = new SharedDataSource());
+        }
+        
+        public ServerType CurrentServerType
+        {
+            get => _currentServerType;
+            set => _currentServerType = value;
         }
 
         /// <summary>

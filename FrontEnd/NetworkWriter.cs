@@ -38,6 +38,12 @@ namespace FrontEnd
                             {
                                 _connectionState = NetworkConnectionState.Disconnecting;
                             }
+                            else if (parameters[0].Equals("GETSERVER"))
+                            {
+                                ServerType nextServer;
+                                nextServer = Enum.TryParse(parameters[1], true, out nextServer) ? nextServer : ServerType.None;
+                                _parent.NextServerType = nextServer;
+                            }
                             byte[] buffer = new byte[messageToSend.Length];
                             int bytesToSend = Encoding.UTF8.GetBytes(messageToSend, 0, messageToSend.Length, buffer, 0);
                             _socket.Send(buffer, bytesToSend, SocketFlags.None);
@@ -59,7 +65,7 @@ namespace FrontEnd
                 }
             }
 
-            while (_serverType == _parent.CurrentServerType)
+            while (_serverType == _sharedDataSource.CurrentServerType)
             {
                 //hold until we have changed server.
             }

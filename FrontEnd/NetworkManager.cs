@@ -20,10 +20,12 @@ namespace FrontEnd
     {
         private Socket _socket;
         private SharedDataSource _sharedDataSource;
-        private ServerType _currentServerType;
-        public ServerType CurrentServerType
+        private ServerType _nextServerType;
+
+        public ServerType NextServerType
         {
-            get => _currentServerType;
+            get => _nextServerType;
+            set => _nextServerType = value;
         }
 
         private IPEndPoint _nextServer;
@@ -37,11 +39,10 @@ namespace FrontEnd
         /// This will start the network manager which will deal with all network communications.
         /// </summary>
         /// <param name="socket">The socket of the first server to be accessed. All other servers will be accessed by the network manager.</param>
-        public NetworkManager(Socket socket)
+        public NetworkManager()
         {
-            _socket = socket;
             _sharedDataSource = SharedDataSource.GetInstance();
-            _currentServerType = ServerType.None;
+            _sharedDataSource.CurrentServerType = ServerType.None;
         }
 
         /// <summary>
@@ -59,18 +60,18 @@ namespace FrontEnd
             _socket = new Socket(serverDetails.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             
             //if the code reaches here, we have successfully connected to the communication server
-            _currentServerType = ServerType.Communication;
+            _sharedDataSource.CurrentServerType = ServerType.Communication;
             doComServerStart();
 
             _sharedDataSource.SocketDied = false;
             
             while (_sharedDataSource.ClientState != ClientState.Quitting) //while the application is not quitting, keep running
             {
-                NetworkReader reader = new NetworkReader(this, _socket, _currentServerType);
+                NetworkReader reader = new NetworkReader(this, _socket, _sharedDataSource.CurrentServerType);
                 Thread readerThread = new Thread(new ThreadStart(reader.Run));
                 readerThread.Start();
                 
-                NetworkWriter writer = new NetworkWriter(this, _socket, _currentServerType);
+                NetworkWriter writer = new NetworkWriter(this, _socket, _sharedDataSource.CurrentServerType);
                 Thread writerThread = new Thread(new ThreadStart(writer.Run));
                 writerThread.Start();
     
@@ -88,7 +89,7 @@ namespace FrontEnd
                     _socket = new Socket(serverDetails.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             
                     //if the code reaches here, we have successfully connected to the communication server
-                    _currentServerType = ServerType.Communication;
+                    _sharedDataSource.CurrentServerType = ServerType.Communication;
                     doComServerStart();
 
                     _sharedDataSource.SocketDied = false;
