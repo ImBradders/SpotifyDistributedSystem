@@ -38,12 +38,6 @@ namespace FrontEnd
                             {
                                 _connectionState = NetworkConnectionState.Disconnecting;
                             }
-                            else if (parameters[0].Equals("GETSERVER"))
-                            {
-                                ServerType type;
-                                _parent.NextServerType =
-                                    Enum.TryParse(parameters[1], true, out type) ? type : ServerType.None;
-                            }
                             byte[] buffer = new byte[messageToSend.Length];
                             int bytesToSend = Encoding.UTF8.GetBytes(messageToSend, 0, messageToSend.Length, buffer, 0);
                             _socket.Send(buffer, bytesToSend, SocketFlags.None);

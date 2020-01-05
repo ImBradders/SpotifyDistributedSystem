@@ -15,6 +15,8 @@ namespace FrontEnd
         private static SharedDataSource _instance = null;
         private Queue<string> _messageQueue;
         public bool SocketDied { get; set; } = false;
+        public ClientState ClientState { get; set; }
+        public string ClientKey { get; set; }
         public event EventHandler InterfaceUpdate;
         private Queue<string> _userQueue;
 
@@ -61,6 +63,17 @@ namespace FrontEnd
             }
             
             return message;
+        }
+
+        /// <summary>
+        /// Allows for the message queue to be reset should this be necessary.
+        /// </summary>
+        public void EmptyMessageQueue()
+        {
+            lock (_messageQueue)
+            {
+                _messageQueue.Clear();
+            }
         }
 
         /// <summary>
