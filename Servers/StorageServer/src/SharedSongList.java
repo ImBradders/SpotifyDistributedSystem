@@ -62,7 +62,7 @@ public class SharedSongList {
      *
      * @return the list of songs.
      */
-    public synchronized List<String> getSongList() {
+    public synchronized ArrayList<String> getSongList() {
         return songList;
     }
 

@@ -1,7 +1,4 @@
 import java.io.*;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
 /**
  * Base server class for the others to be built on top of.

@@ -3,12 +3,20 @@ using System.Collections.Generic;
 
 namespace FrontEnd
 {
+    /// <summary>
+    /// This will be the shared data source for the system.
+    ///
+    /// The message queue is the queue of messages to be sent to the server.
+    /// The network queue is the queue of responses from the server.
+    /// The user queue is the queue of responses that affect the user.
+    /// </summary>
     public class SharedDataSource
     {
         private static SharedDataSource _instance = null;
         private Queue<string> _messageQueue;
-        public event EventHandler AddedResponse;
-        private Queue<string> _responseQueue;
+        public bool SocketDied { get; set; } = false;
+        public event EventHandler InterfaceUpdate;
+        private Queue<string> _userQueue;
 
         /// <summary>
         /// Constructor for the singleton class to allow for the queues to be created.
@@ -16,7 +24,7 @@ namespace FrontEnd
         private SharedDataSource()
         {
             _messageQueue = new Queue<string>();
-            _responseQueue = new Queue<string>();
+            _userQueue = new Queue<string>();
         }
 
         /// <summary>
@@ -49,7 +57,7 @@ namespace FrontEnd
             string message;
             lock (_messageQueue)
             {
-                message = _messageQueue.Dequeue();
+                message = _messageQueue.Count > 0 ? _messageQueue.Dequeue() : null;
             }
             
             return message;
@@ -58,34 +66,34 @@ namespace FrontEnd
         /// <summary>
         /// Fires off an event handler, if one is subscribed, to process a message when it is added.
         /// </summary>
-        private void OnAddResponse()
+        private void OnAddToUserQueue()
         {
-            AddedResponse?.Invoke(this, EventArgs.Empty);
+            InterfaceUpdate?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
-        /// Adds a response to the response queue and activates the response that says that this has been added.
+        /// Adds a response to the user queue and activates the event that says that this has been added.
         /// </summary>
-        /// <param name="response">The response from the server.</param>
-        public void AddResponse(string response)
+        /// <param name="userResponse">The response from the server.</param>
+        public void AddUserQueue(string userResponse)
         {
-            lock (_responseQueue)
+            lock (_userQueue)
             {
-                _responseQueue.Enqueue(response);
+                _userQueue.Enqueue(userResponse);
             }
-            OnAddResponse();
+            OnAddToUserQueue();
         }
 
         /// <summary>
-        /// Gets a response from the response queue.
+        /// Gets a response from the user queue.
         /// </summary>
         /// <returns>A response from the server.</returns>
-        public string GetResponse()
+        public string GetUserQueue()
         {
             string response;
-            lock (_responseQueue)
+            lock (_userQueue)
             {
-                response = _responseQueue.Dequeue();
+                response = _userQueue.Dequeue();
             }
 
             return response;

@@ -74,7 +74,7 @@ public class ConnectionHandler implements Runnable {
                 //convert message to string
                 String messageToProcess = MessageConverter.byteToString(buffer, bytesRead);
 
-                String[] arguments = messageToProcess.split(" : ");
+                String[] arguments = messageToProcess.split(":");
 
                 //process messages
                 switch(arguments[0]) {
@@ -94,15 +94,15 @@ public class ConnectionHandler implements Runnable {
                         if (arguments[1].equals("STORAGE")) {
                             ServerConnectionDetails serverConnectionDetails = dataStore.getServer(Enum.valueOf(ServerType.class, arguments[1]));
                             if (serverConnectionDetails == null) {
-                                buffer = MessageConverter.stringToByte("ERROR : No storage server exists.");
+                                buffer = MessageConverter.stringToByte("ERROR:No storage server exists.");
                             }
                             else {
-                                buffer = MessageConverter.stringToByte("IP : " + serverConnectionDetails.getIpAddress() +
-                                        " : PORT : " + serverConnectionDetails.getPortNumber());
+                                buffer = MessageConverter.stringToByte("IP:" + serverConnectionDetails.getIpAddress() +
+                                        ":PORT:" + serverConnectionDetails.getPortNumber());
                             }
                         }
                         else { //a server has tried to request something that they should not.
-                            buffer = MessageConverter.stringToByte("ERROR : Incorrect server type.");
+                            buffer = MessageConverter.stringToByte("ERROR:Incorrect server type.");
                         }
                         dataOut.write(buffer);
                         break;
@@ -138,7 +138,7 @@ public class ConnectionHandler implements Runnable {
                 //convert message to string
                 String messageToProcess = MessageConverter.byteToString(buffer, bytesRead);
 
-                String[] arguments = messageToProcess.split(" : ");
+                String[] arguments = messageToProcess.split(":");
 
                 //process messages
                 switch(arguments[0]) {
@@ -149,15 +149,15 @@ public class ConnectionHandler implements Runnable {
                         if (arguments[1].equals("LOGIN") || arguments[1].equals("STREAMING")) {
                             ServerConnectionDetails serverConnectionDetails = dataStore.getServer(Enum.valueOf(ServerType.class, arguments[1]));
                             if (serverConnectionDetails == null) {
-                                buffer = MessageConverter.stringToByte("ERROR : No server of type '" + arguments[1] + "' exists.");
+                                buffer = MessageConverter.stringToByte("ERROR:No server of type '" + arguments[1] + "' exists.");
                             }
                             else {
-                                buffer = MessageConverter.stringToByte("IP : " + serverConnectionDetails.getIpAddress() +
-                                        " : PORT : " + serverConnectionDetails.getPortNumber());
+                                buffer = MessageConverter.stringToByte("IP:" + serverConnectionDetails.getIpAddress() +
+                                        ":PORT:" + serverConnectionDetails.getPortNumber());
                             }
                         }
                         else { //a client has tried to request something that they should not.
-                            buffer = MessageConverter.stringToByte("ERROR : Incorrect server type.");
+                            buffer = MessageConverter.stringToByte("ERROR:Incorrect server type.");
                         }
                         dataOut.write(buffer);
                         break;

@@ -91,7 +91,7 @@ public class StreamingServer extends BaseServer {
             communicationServerOutput.write(MessageConverter.stringToByte("SERVER"));
             communicationServerOutput.flush();
 
-            communicationServerOutput.write(MessageConverter.stringToByte("SERVERTYPE : STREAMING"));
+            communicationServerOutput.write(MessageConverter.stringToByte("SERVERTYPE:STREAMING"));
             communicationServerOutput.flush();
 
             messageSize = communicationServerInput.read(buffer);

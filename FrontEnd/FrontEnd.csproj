@@ -58,6 +58,11 @@
     <Compile Include="Login.Designer.cs">
       <DependentUpon>Login.cs</DependentUpon>
     </Compile>
+    <Compile Include="NetworkConnectionState.cs" />
+    <Compile Include="NetworkManager.cs" />
+    <Compile Include="NetworkReader.cs" />
+    <Compile Include="NetworkWriter.cs" />
+    <Compile Include="ServerType.cs" />
     <Compile Include="SharedDataSource.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

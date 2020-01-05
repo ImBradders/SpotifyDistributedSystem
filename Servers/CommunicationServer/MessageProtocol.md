@@ -20,7 +20,7 @@ A message to check to ensure that the connection is still alive, as if the clien
 
 ### Get Server
 
-GETSERVER | IP : a.b.c.d : PORT : x
+GETSERVER : [type] | IP : a.b.c.d : PORT : x
 
 A message to ask for a move to a music service or login provider.
 

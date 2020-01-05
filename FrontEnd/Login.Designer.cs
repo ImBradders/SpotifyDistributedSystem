@@ -46,7 +46,7 @@ namespace FrontEnd
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblMessage.Location = new System.Drawing.Point(12, 9);
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(333, 81);
+            this.lblMessage.Size = new System.Drawing.Size(332, 81);
             this.lblMessage.TabIndex = 0;
             this.lblMessage.Text = "Welcome to Music Streaming Service!";
             this.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -57,7 +57,7 @@ namespace FrontEnd
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.txtUsername.Location = new System.Drawing.Point(113, 157);
             this.txtUsername.Name = "txtUsername";
-            this.txtUsername.Size = new System.Drawing.Size(232, 29);
+            this.txtUsername.Size = new System.Drawing.Size(231, 29);
             this.txtUsername.TabIndex = 1;
             // 
             // label1
@@ -66,7 +66,7 @@ namespace FrontEnd
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label1.Location = new System.Drawing.Point(12, 160);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(95, 28);
+            this.label1.Size = new System.Drawing.Size(94, 28);
             this.label1.TabIndex = 2;
             this.label1.Text = "Username:";
             // 
@@ -76,7 +76,7 @@ namespace FrontEnd
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label2.Location = new System.Drawing.Point(12, 213);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(95, 28);
+            this.label2.Size = new System.Drawing.Size(94, 28);
             this.label2.TabIndex = 4;
             this.label2.Text = "Password:";
             // 
@@ -86,7 +86,7 @@ namespace FrontEnd
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.txtPassword.Location = new System.Drawing.Point(113, 210);
             this.txtPassword.Name = "txtPassword";
-            this.txtPassword.Size = new System.Drawing.Size(232, 29);
+            this.txtPassword.Size = new System.Drawing.Size(231, 29);
             this.txtPassword.TabIndex = 3;
             // 
             // btnLogin
@@ -95,7 +95,7 @@ namespace FrontEnd
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.btnLogin.Location = new System.Drawing.Point(198, 314);
             this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(147, 41);
+            this.btnLogin.Size = new System.Drawing.Size(147, 42);
             this.btnLogin.TabIndex = 5;
             this.btnLogin.Text = "Login";
             this.btnLogin.UseVisualStyleBackColor = true;
@@ -106,7 +106,7 @@ namespace FrontEnd
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.btnCreateAccount.Location = new System.Drawing.Point(12, 314);
             this.btnCreateAccount.Name = "btnCreateAccount";
-            this.btnCreateAccount.Size = new System.Drawing.Size(147, 41);
+            this.btnCreateAccount.Size = new System.Drawing.Size(147, 42);
             this.btnCreateAccount.TabIndex = 6;
             this.btnCreateAccount.Text = "Create Account";
             this.btnCreateAccount.UseVisualStyleBackColor = true;
@@ -125,6 +125,7 @@ namespace FrontEnd
             this.Controls.Add(this.lblMessage);
             this.Name = "Login";
             this.Text = "Login";
+            this.Load += new System.EventHandler(this.Login_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
         }

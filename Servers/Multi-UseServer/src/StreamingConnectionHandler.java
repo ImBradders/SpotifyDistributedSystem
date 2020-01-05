@@ -60,7 +60,7 @@ public class StreamingConnectionHandler extends ConnectionHandler {
                 //convert message to string for easier handling
                 String messageToProcess = MessageConverter.byteToString(buffer, bytesRead);
 
-                String[] arguments = messageToProcess.split(" : ");
+                String[] arguments = messageToProcess.split(":");
 
                 switch (arguments[0]) {
                     case "DISCONNECT":
@@ -112,13 +112,13 @@ public class StreamingConnectionHandler extends ConnectionHandler {
             if (songsFound.size() > 0) {
                 String toAdd = songsFound.get(randomNumberGenerator.nextInt(songsFound.size()));
                 songQueue.enqueue(toAdd);
-                return "ADDED : " + toAdd;
+                return "ADDED:" + toAdd;
             } else {
-                return "ERROR : Song not in cache.";
+                return "ERROR:Song not in cache.";
             }
         }
 
-        return "ERROR : Song not in system.";
+        return "ERROR:Song not in system.";
     }
 
     /**
@@ -142,13 +142,13 @@ public class StreamingConnectionHandler extends ConnectionHandler {
             communicationServerOutput.flush();
 
             //request details for a storage server.
-            communicationServerOutput.write(MessageConverter.stringToByte("GETSERVER : STORAGE"));
+            communicationServerOutput.write(MessageConverter.stringToByte("GETSERVER:STORAGE"));
             communicationServerOutput.flush();
 
             //handle response.
             messageSize = dataInputStream.read(buffer);
             messageReceived = MessageConverter.byteToString(buffer, messageSize);
-            String[] responses = messageReceived.split(" : ");
+            String[] responses = messageReceived.split(":");
 
             if (responses[0].equals("IP")) {
                 //we got the message back fine
