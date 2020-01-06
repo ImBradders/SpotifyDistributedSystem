@@ -17,6 +17,7 @@ public class ConnectionHandler implements Runnable {
     private final String musicStorage;
     private final String loginStorage;
     private final String fileSeparator;
+    private final LoginDetailsList loginDetailsList;
     private ServerConnectionDetails communicationServer;
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
@@ -28,6 +29,7 @@ public class ConnectionHandler implements Runnable {
         this.musicStorage = musicStorage;
         this.loginStorage = loginStorage;
         this.fileSeparator = System.getProperty("file.separator");
+        this.loginDetailsList = LoginDetailsList.getInstance();
     }
 
     @Override
@@ -77,11 +79,13 @@ public class ConnectionHandler implements Runnable {
 
                     case "ADD":
                         //add an account
+                        buffer = MessageConverter.stringToByte(processAddUser(arguments));
+                        dataOutputStream.write(buffer);
                         break;
 
                     case "LOGIN":
                         //confirm that the user exists
-
+                        buffer = MessageConverter.stringToByte(processLogin(arguments));
                         break;
 
                     default:
@@ -99,6 +103,63 @@ public class ConnectionHandler implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    private String processLogin(String[] arguments) {
+        String toReturn;
+        if (arguments.length < 3) {
+            toReturn = "ERROR:Unable to log in";
+        }
+        else {
+            String userName = arguments[1];
+            String password = arguments[2];
+
+            if (!loginDetailsList.userExists(userName)) {
+                toReturn = "ERROR:Username does not exist";
+            }
+            else {
+                if (loginDetailsList.verifyUser(new LoginDetails(userName, password))) {
+                    toReturn = "AUTH";
+                }
+                else {
+                    toReturn = "ERROR:Password incorrect";
+                }
+            }
+        }
+
+        return toReturn;
+    }
+
+    /**
+     * Checks to ensure that a user does not already exist with the same name and then adds the new user to the system.
+     *
+     * @param arguments the arguments passed to the server to be processed.
+     * @return the message to be returned.
+     */
+    private String processAddUser(String[] arguments) {
+        String toReturn;
+        if (arguments.length < 3) {
+            toReturn = "ERROR:Unable to create account";
+        }
+        else {
+            String userName = arguments[1];
+            String password = arguments[2];
+
+            if (loginDetailsList.userExists(userName)) {
+                toReturn = "ERROR:Username already exists";
+            }
+            else {
+                if (loginDetailsList.addUser(userName, password)) {
+                    toReturn = "ADDED";
+                }
+                else {
+                    toReturn = "ERROR:Unable to create account";
+                }
+            }
+        }
+
+        return toReturn;
     }
 
     /**
@@ -128,4 +189,6 @@ public class ConnectionHandler implements Runnable {
 
         return "ERROR:Song not in system.";
     }
+
+
 }

@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class LoginDetailsList {
     private static LoginDetailsList instance;
-    private List<LoginDetails> loginDetails;
+    private final List<LoginDetails> loginDetails;
 
     private LoginDetailsList() {
         loginDetails = new ArrayList<LoginDetails>();
@@ -83,20 +83,24 @@ public class LoginDetailsList {
     public boolean loadFromFile(String filePath) {
         File userDetailsFile = new File(filePath);
         try {
-            FileReader fileReader = new FileReader(userDetailsFile);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String currentLine = bufferedReader.readLine();
+            if (userDetailsFile.exists())
+            {
+                FileReader fileReader = new FileReader(userDetailsFile);
+                BufferedReader bufferedReader = new BufferedReader(fileReader);
+                String currentLine = bufferedReader.readLine();
 
-            //file formatted as username, password.
-            while (currentLine != null) {
-                String[] details = currentLine.split(", ");
-                addUser(details[0], details[1]);
-                currentLine = bufferedReader.readLine();
+                //file formatted as username, password.
+                while (currentLine != null) {
+                    String[] details = currentLine.split(", ");
+                    addUser(details[0], details[1]);
+                    currentLine = bufferedReader.readLine();
+                }
+
+                fileReader.close();
             }
-
-            fileReader.close();
-
-            return true;
+            else {
+                return false;
+            }
         }
         catch (FileNotFoundException e) {
             System.out.println("Unable to find user details file.");
@@ -106,5 +110,45 @@ public class LoginDetailsList {
             e.printStackTrace();
             return false;
         }
+        return true;
+    }
+
+    /**
+     * Write the list of user details to the file.
+     *
+     * @param filePath the path of the user file.
+     * @return whether or not the file was written.
+     */
+    public boolean writeToFile(String filePath) {
+        File userDetailsFile = new File(filePath);
+        try {
+            if (!userDetailsFile.exists()) {
+                if (!userDetailsFile.createNewFile()) {
+                    return false;
+                }
+            }
+
+            FileWriter fileWriter = new FileWriter(userDetailsFile);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+            bufferedWriter.write(""); //first, empty the file.
+
+            synchronized (loginDetails) {
+                for (LoginDetails detail : loginDetails) {
+                    bufferedWriter.append(detail.getUsername());
+                    bufferedWriter.append(", ");
+                    bufferedWriter.append(detail.getPassword());
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+                }
+            }
+
+            bufferedWriter.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

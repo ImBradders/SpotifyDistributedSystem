@@ -19,9 +19,9 @@ This will search the list of songs for a given keyword. If there is something ma
 
 ### Get Song
 
-GET : [song title] | SENDING
+GET : [song title] | [The size of the song in bytes] followed by [The song as a byte array]
 
-This will request the file from the server. It will then send multiple messages until the entire file has been transferred. Once the whole file is transferred, the message "EOF : EOF : EOF" will be sent to say that the end of the file has been reached.
+This will request the file from the server. It will then send multiple messages until the entire file has been transferred. Once the whole file is transferred, the message "EOF:EOF:EOF" will be sent to say that the end of the file has been reached.
 
 ### Add User
 
