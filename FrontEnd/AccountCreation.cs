@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FrontEnd
@@ -10,6 +11,7 @@ namespace FrontEnd
         {
             InitializeComponent();
             _sharedDataSource = SharedDataSource.GetInstance();
+            _sharedDataSource.Updated += InterfaceUpdated;
         }
 
         private void btnCreateAccount_Click(object sender, EventArgs e)
@@ -26,13 +28,18 @@ namespace FrontEnd
             }
             else if (txtPassword.Text == txtPasswordReEnter.Text)
             {
-                //do acc creation.
+                _sharedDataSource.AddMessage("CREATE:"+txtUsername.Text+":"+txtPassword.Text);
             }
             else
             {
                 //there was an error that I did not think of
                 MessageBox.Show("Error");
             }
+        }
+
+        private void InterfaceUpdated()
+        {
+            lblOutput.Text = _sharedDataSource.GetUserQueue();
         }
     }
 }

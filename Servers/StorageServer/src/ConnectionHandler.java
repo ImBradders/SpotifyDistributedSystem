@@ -75,6 +75,7 @@ public class ConnectionHandler implements Runnable {
 
                     case "GET":
                         //send the song file to the streaming server
+                        
                         break;
 
                     case "ADD":
@@ -86,6 +87,7 @@ public class ConnectionHandler implements Runnable {
                     case "LOGIN":
                         //confirm that the user exists
                         buffer = MessageConverter.stringToByte(processLogin(arguments));
+                        dataOutputStream.write(buffer);
                         break;
 
                     default:

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace FrontEnd
 {
+    public delegate void InterfaceUpdateHandler();
     /// <summary>
     /// This will be the shared data source for the system.
     ///
@@ -18,10 +19,19 @@ namespace FrontEnd
         private ServerType _currentServerType;
         public ClientState ClientState { get; set; }
         public string ClientKey { get; set; }
-        public event EventHandler InterfaceUpdate;
         private Queue<string> _userQueue;
-        
-        
+
+        public event InterfaceUpdateHandler Updated;
+
+        protected virtual void OnInterfaceUpdate()
+        {
+            InterfaceUpdateHandler handler = Updated;
+
+            if (handler != null)
+            {
+                handler();
+            }
+        }
 
         /// <summary>
         /// Constructor for the singleton class to allow for the queues to be created.
@@ -86,14 +96,6 @@ namespace FrontEnd
         }
 
         /// <summary>
-        /// Fires off an event handler, if one is subscribed, to process a message when it is added.
-        /// </summary>
-        private void OnAddToUserQueue()
-        {
-            InterfaceUpdate?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
         /// Adds a response to the user queue and activates the event that says that this has been added.
         /// </summary>
         /// <param name="userResponse">The response from the server.</param>
@@ -103,7 +105,8 @@ namespace FrontEnd
             {
                 _userQueue.Enqueue(userResponse);
             }
-            OnAddToUserQueue();
+
+            OnInterfaceUpdate();
         }
 
         /// <summary>

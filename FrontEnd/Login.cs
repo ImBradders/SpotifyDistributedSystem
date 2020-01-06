@@ -14,6 +14,7 @@ namespace FrontEnd
         {
             InitializeComponent();
             _sharedDataSource = SharedDataSource.GetInstance();
+            _sharedDataSource.Updated += InterfaceUpdated;
         }
         
         private void Login_Load(object sender, EventArgs e)
@@ -26,6 +27,11 @@ namespace FrontEnd
             
             //this will get put out to the network to get us a login server.
             _sharedDataSource.AddMessage("GETSERVER:LOGIN");
+        }
+        
+        private void InterfaceUpdated()
+        {
+            _sharedDataSource.GetUserQueue();
         }
     }
 }
