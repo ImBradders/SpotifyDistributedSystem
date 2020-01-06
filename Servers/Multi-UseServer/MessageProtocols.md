@@ -43,15 +43,17 @@ CREATE : [username] : [password] | ADDED or ERROR
 
 Creates an account for the username and password provided.
 Possible errors include:
+- Not enough params.
 - Username already exists
 - Unable to create user
 
 ### Login
 
-LOGIN : [username] : [password] | AUTH : [token] or ERROR
+LOGIN : [username] : [password] | AUTH or ERROR
 
 Logs a user into their account providing them with an auth token which they can use later.
 Possible errors include:
-- User doesn't exist
-- Password doesn't match
-- Unable to login.
+- Not enough params
+- Username does not exist
+- Password incorrect
+- Unable to log in

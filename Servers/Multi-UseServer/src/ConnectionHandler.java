@@ -3,6 +3,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for handling connections to clients.
@@ -33,13 +35,13 @@ public class ConnectionHandler implements Runnable {
      * Gets the IP and port number of a storage server to get un-cached music from.
      */
     protected void getStorageServer() {
-        ConnectionState connectionState = null;
+        ConnectionState communicationServerConnectionState = null;
         try {
             //connect to the communication server.
             Socket communicationServerConnection = new Socket(communicationServer.getIpAddress(), communicationServer.getPortNumber());
             DataOutputStream communicationServerOutput = new DataOutputStream(communicationServerConnection.getOutputStream());
             DataInputStream communicationServerInput = new DataInputStream(communicationServerConnection.getInputStream());
-            connectionState = ConnectionState.CONNECTED;
+            communicationServerConnectionState = ConnectionState.CONNECTED;
 
             int messageSize = 0;
             String messageReceived = null;
@@ -94,7 +96,7 @@ public class ConnectionHandler implements Runnable {
                 System.out.println("Unable to disconnect properly from communication server.");
             }
 
-            connectionState = ConnectionState.DISCONNECTING;
+            communicationServerConnectionState = ConnectionState.DISCONNECTING;
             communicationServerConnection.close();
         }
         catch (UnknownHostException e) {
@@ -102,11 +104,82 @@ public class ConnectionHandler implements Runnable {
             System.out.println("Communication server is dead.");
         }
         catch (IOException e) {
-            if (connectionState != ConnectionState.DISCONNECTING) {
+            if (communicationServerConnectionState != ConnectionState.DISCONNECTING) {
                 System.out.println("Error getting storage server details.");
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Sends a list of messages to the storage server and stores the responses that it gets back.
+     *
+     * @param messages the list of messages to be sent to the storage server. This should not include the disconnect message.
+     * @return the messages returned from the storage server.
+     */
+    protected List<String> messageStorageServer(List<String> messages) {
+        List<String> replies = new ArrayList<String>();
+        ConnectionState storageServerConnectionState = ConnectionState.CONNECTED;
+        Socket storageServer = null;
+        if (myStorageServer == null) {
+            //if we have no storage server, attempt to get it one more time.
+            getStorageServer();
+            if (myStorageServer == null) {
+                replies.add("ERROR:Storage server inaccessible.");
+                return replies;
+            }
+        }
+
+        try {
+            storageServer = new Socket(myStorageServer.getIpAddress(), myStorageServer.getPortNumber());
+            DataOutputStream storageServerOut = new DataOutputStream(storageServer.getOutputStream());
+            DataInputStream storageServerIn = new DataInputStream(storageServer.getInputStream());
+
+            byte[] buffer = new byte[200];
+            int bytesRead = 0;
+
+            //send all messages
+            for (String message : messages) {
+                storageServerOut.write(MessageConverter.stringToByte(message));
+                storageServerOut.flush();
+                bytesRead = storageServerIn.read(buffer);
+                replies.add(MessageConverter.byteToString(buffer, bytesRead));
+            }
+
+            //safely disconnect
+            storageServerOut.write(MessageConverter.stringToByte("DISCONNECT"));
+            storageServerOut.flush();
+            storageServerConnectionState = ConnectionState.DISCONNECTING; //this is set here as the storage server may close the socket before we process its reply.
+            bytesRead = storageServerIn.read(buffer);
+            String message = MessageConverter.byteToString(buffer, bytesRead);
+            if (message.equalsIgnoreCase("DISCONNECT")) {
+                storageServer.close();
+            }
+        }
+        catch (UnknownHostException e) {
+            replies.add("ERROR:Storage server inaccessible.");
+        }
+        catch (IOException e) {
+            if (storageServerConnectionState != ConnectionState.DISCONNECTING) {
+                //we died before our time
+                replies.add("ERROR:Storage server inaccessible.");
+            }
+        }
+        finally {
+            try {
+                if (storageServer != null && storageServer.isClosed())
+                {
+                    storageServer.close();
+                }
+            }
+            catch (IOException e) {
+                //we couldnt close the socket but we can ignore this.
+                e.printStackTrace();
+            }
+
+        }
+
+        return replies;
     }
 
     /**

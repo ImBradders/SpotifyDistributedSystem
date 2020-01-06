@@ -2,6 +2,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoginConnectionHandler extends ConnectionHandler {
 
@@ -46,6 +48,24 @@ public class LoginConnectionHandler extends ConnectionHandler {
                         dataOutputStream.write(MessageConverter.stringToByte("DISCONNECT"));
                         break;
 
+                    case "CREATE":
+                        if (arguments.length < 3) {
+                            dataOutputStream.write(MessageConverter.stringToByte("ERROR:Not enough params"));
+                        }
+                        else {
+                            dataOutputStream.write(MessageConverter.stringToByte(addUser(arguments[1], arguments[2])));
+                        }
+                        break;
+
+                    case "LOGIN":
+                        if (arguments.length < 3) {
+                            dataOutputStream.write(MessageConverter.stringToByte("ERROR:Not enough params"));
+                        }
+                        else {
+                            dataOutputStream.write(MessageConverter.stringToByte(login(arguments[1], arguments[2])));
+                        }
+                        break;
+
                     default:
                         buffer = MessageConverter.stringToByte("MESSAGEUNSUPPORTED");
                         dataOutputStream.write(buffer);
@@ -59,5 +79,36 @@ public class LoginConnectionHandler extends ConnectionHandler {
                 e.printStackTrace();
             }
         }
+    }
+
+    private String login(String username, String password) {
+        List<String> messages = new ArrayList<String>();
+        messages.add("LOGIN:"+username+":"+password);
+        messages = messageStorageServer(messages);
+
+        for (String message : messages) {
+            if (message.startsWith("ERROR")) {
+                //this needs to be reported to the user so this is what we will return. The user can then handle this again.
+                return message;
+            }
+        }
+
+        return "AUTH";
+    }
+
+    private String addUser(String username, String password) {
+        List<String> messages = new ArrayList<String>();
+        messages.add("ADD:"+username+":"+password);
+        messages.add("LOGIN:"+username+":"+password);
+        messages = messageStorageServer(messages);
+
+        for (String message : messages) {
+            if (message.startsWith("ERROR")) {
+                //this needs to be reported to the user so this is what we will return. The user can then handle this again.
+                return message;
+            }
+        }
+
+        return "ADDED";
     }
 }
