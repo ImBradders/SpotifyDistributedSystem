@@ -41,7 +41,8 @@ public class StreamingConnectionHandler extends ConnectionHandler {
             connectionState = ConnectionState.CONNECTED;
 
             doMessagePump();
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -79,6 +80,8 @@ public class StreamingConnectionHandler extends ConnectionHandler {
                 }
                 dataOutputStream.flush();
             }
+
+            socket.close();
         }
         catch (IOException e) {
             if (connectionState != ConnectionState.DISCONNECTING) {

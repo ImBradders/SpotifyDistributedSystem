@@ -9,6 +9,7 @@ import java.net.Socket;
  */
 public class StorageServer {
     private int portNumber;
+    private ServerConnectionDetails communicationServerDetails;
 
     /**
      * Constructor to create the class with all internal variables set up.
@@ -24,6 +25,7 @@ public class StorageServer {
         try {
             //Set up/check storage
             String fileSeparator = System.getProperty("file.separator");
+            //music storage
             File file = new File(System.getProperty("user.dir") + fileSeparator + "MusicBank");
             if (!file.exists()) {
                 //we were unable to find the music storage
@@ -32,20 +34,37 @@ public class StorageServer {
                     return false;
                 }
             }
-            String cachedStorage = file.toString() + fileSeparator;
+            String musicStorage = file.toString() + fileSeparator;
 
             if (!(file.canWrite() && file.canRead())) {
                 //we cannot read and write to the specified file location - therefore we are useless.
                 return false;
             }
 
+            //login details storage
+            file = new File(System.getProperty("user.dir") + fileSeparator + "MusicBank");
+            if (!file.exists()) {
+                //we were unable to find the music storage
+                if (!file.mkdirs()) {
+                    //we were unable to create the music storage.
+                    return false;
+                }
+            }
+            String loginStorage = file.toString() + fileSeparator;
+
+            if (!(file.canWrite() && file.canRead())) {
+                //we cannot read and write to the specified file location - therefore we are useless.
+                return false;
+            }
+
+            //contact the communication server to tell it that we exist
             boolean communicationServerContacted = contactCommunicationServer();
 
             if (!communicationServerContacted) {
                 return false;
             }
 
-            SongListManager songListManager = new SongListManager(cachedStorage);
+            SongListManager songListManager = new SongListManager(musicStorage);
             Thread songListMgr = new Thread(songListManager);
             songListMgr.start();
 
@@ -53,11 +72,11 @@ public class StorageServer {
             ServerSocket serverSocket = new ServerSocket(portNumber);
 
             while (isRunning) {
-                System.out.println("Awaiting clients to stream to...");
+                System.out.println("Awaiting connection requests...");
 
                 Socket socket = serverSocket.accept();
 
-                ConnectionHandler connectionHandler = new ConnectionHandler(socket);
+                ConnectionHandler connectionHandler = new ConnectionHandler(socket, musicStorage, loginStorage, communicationServerDetails);
                 Thread handler = new Thread(connectionHandler);
                 handler.start();
             }
@@ -79,7 +98,7 @@ public class StorageServer {
     protected boolean contactCommunicationServer() {
         ConnectionState connectionState = null;
         try {
-            ServerConnectionDetails communicationServerDetails = getCommunicationServerDetails();
+            communicationServerDetails = getCommunicationServerDetails();
             Socket communicationServerConnection = new Socket(communicationServerDetails.getIpAddress(), communicationServerDetails.getPortNumber());
             DataOutputStream communicationServerOutput = new DataOutputStream(communicationServerConnection.getOutputStream());
             DataInputStream communicationServerInput = new DataInputStream(communicationServerConnection.getInputStream());
