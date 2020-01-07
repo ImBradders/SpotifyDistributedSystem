@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -76,6 +77,21 @@ public class ConnectionHandler implements Runnable {
                     case "GET":
                         //send the song file to the streaming server
 
+                        break;
+
+                    case "SONGLIST":
+                        List<String> songs = getAllSongs();
+                        if (songs.size() == 0) {
+                            buffer = MessageConverter.stringToByte("ERROR:No songs");
+                            dataOutputStream.write(buffer);
+                        }
+                        else {
+                            for (String song : songs) {
+                                buffer = MessageConverter.stringToByte("SONGS:" + song);
+                                dataOutputStream.write(buffer);
+                                dataOutputStream.flush();
+                            }
+                        }
                         break;
 
                     case "ADD":
@@ -192,5 +208,21 @@ public class ConnectionHandler implements Runnable {
         return "ERROR:Song not in system.";
     }
 
-
+    /**
+     * Retrieves the full list of songs.
+     *
+     * @return the full list of songs.
+     */
+    private List<String> getAllSongs() {
+        File songLocation = new File(musicStorage);
+        String[] songs = songLocation.list();
+        List<String> list;
+        if (songs != null) {
+            list = Arrays.asList(songs);
+        }
+        else {
+            list = new ArrayList<String>();
+        }
+        return list;
+    }
 }

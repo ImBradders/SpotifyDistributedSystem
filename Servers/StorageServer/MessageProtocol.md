@@ -23,6 +23,13 @@ GET : [song title] | [The size of the song in bytes] followed by [The song as a 
 
 This will request the file from the server. It will then send multiple messages until the entire file has been transferred. Once the whole file is transferred, the message "EOF:EOF:EOF" will be sent to say that the end of the file has been reached.
 
+### Retrieve List of Songs
+
+SONGLIST | SONGS : [a song title] + more
+
+Gets the full song list and sends this to the client. 
+SONGS is followed by the first returned song and then further messages in the same format will be sent until the end of the list of songs is complete.
+
 ### Add User
 
 ADD : [username] : [password] | ADDED or ERROR

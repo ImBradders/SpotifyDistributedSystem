@@ -5,12 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-/*
- * https://stackoverflow.com/questions/21976011/playing-byte-in-c-sharp
- * https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream.-ctor?view=netframework-4.8#System_IO_MemoryStream__ctor_System_Int32_
- * https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream.write?view=netframework-4.8#System_IO_MemoryStream_Write_System_Byte___System_Int32_System_Int32_
- */
-
 namespace FrontEnd
 {
     /// <summary>

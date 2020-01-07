@@ -29,7 +29,22 @@ REMOVE : [search term] | REMOVED : [song title]
 
 Removes a song from the client's current queue. If the song cannot be found within the queue, "ERROR : not found" shall be returned instead.
 
+### Retrieve List of Songs
+
+SONGLIST | SONGS : [a song title] + more
+
+Gets the full song list and sends this to the client. 
+SONGS is followed by the first returned song and then further messages in the same format will be sent until the end of the list of songs is complete.
+Can also return "ERROR:No songs" if there are no songs in the system.
+
 ## Login Server
+
+### Disconnect
+
+DISCONNECT | DISCONNECT
+
+This message allows the client to disconnect safely from the login server.
+
 
 ### Create Account
 
