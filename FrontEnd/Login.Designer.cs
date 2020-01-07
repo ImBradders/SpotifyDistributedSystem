@@ -40,9 +40,6 @@ namespace FrontEnd
             this.btnCreateAccount = new System.Windows.Forms.Button();
             this.lblError = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // lblMessage
-            // 
             this.lblMessage.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblMessage.Location = new System.Drawing.Point(12, 9);
@@ -51,18 +48,12 @@ namespace FrontEnd
             this.lblMessage.TabIndex = 0;
             this.lblMessage.Text = "Welcome to Music Streaming Service!";
             this.lblMessage.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // txtUsername
-            // 
             this.txtUsername.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.txtUsername.Location = new System.Drawing.Point(113, 157);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(231, 29);
             this.txtUsername.TabIndex = 1;
-            // 
-            // label1
-            // 
             this.label1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label1.Location = new System.Drawing.Point(12, 160);
@@ -70,9 +61,6 @@ namespace FrontEnd
             this.label1.Size = new System.Drawing.Size(94, 28);
             this.label1.TabIndex = 2;
             this.label1.Text = "Username:";
-            // 
-            // label2
-            // 
             this.label2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label2.Location = new System.Drawing.Point(12, 213);
@@ -80,18 +68,12 @@ namespace FrontEnd
             this.label2.Size = new System.Drawing.Size(94, 28);
             this.label2.TabIndex = 4;
             this.label2.Text = "Password:";
-            // 
-            // txtPassword
-            // 
             this.txtPassword.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.txtPassword.Location = new System.Drawing.Point(113, 210);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(231, 29);
             this.txtPassword.TabIndex = 3;
-            // 
-            // btnLogin
-            // 
             this.btnLogin.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.btnLogin.Location = new System.Drawing.Point(198, 314);
@@ -101,9 +83,6 @@ namespace FrontEnd
             this.btnLogin.Text = "Login";
             this.btnLogin.UseVisualStyleBackColor = true;
             this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
-            // 
-            // btnCreateAccount
-            // 
             this.btnCreateAccount.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.btnCreateAccount.Location = new System.Drawing.Point(12, 314);
@@ -113,9 +92,6 @@ namespace FrontEnd
             this.btnCreateAccount.Text = "Create Account";
             this.btnCreateAccount.UseVisualStyleBackColor = true;
             this.btnCreateAccount.Click += new System.EventHandler(this.btnCreateAccount_Click);
-            // 
-            // lblError
-            // 
             this.lblError.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblError.Location = new System.Drawing.Point(13, 242);
@@ -123,9 +99,6 @@ namespace FrontEnd
             this.lblError.Size = new System.Drawing.Size(332, 69);
             this.lblError.TabIndex = 7;
             this.lblError.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // Login
-            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(357, 367);

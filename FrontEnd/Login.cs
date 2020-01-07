@@ -42,7 +42,10 @@ namespace FrontEnd
                 
                 case "AUTH":
                     _sharedDataSource.Updated -= InterfaceUpdated;
-                    //TODO navigate to next form.
+                    _sharedDataSource.ClientState = ClientState.LoggedIn;
+                    Streaming streaming = new Streaming();
+                    streaming.Show();
+                    this.Close();
                     break;
             }
         }

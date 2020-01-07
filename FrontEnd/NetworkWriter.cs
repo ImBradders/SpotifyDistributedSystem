@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Sockets;
 using System.Text;
 
@@ -15,6 +15,7 @@ namespace FrontEnd
         public NetworkWriter(NetworkManager parent, Socket socket, ServerType serverType)
         {
             _parent = parent;
+            _parent.WriterAlive = true;
             _socket = socket;
             _serverType = serverType;
             _connectionState = NetworkConnectionState.Connected;
@@ -66,10 +67,7 @@ namespace FrontEnd
                 }
             }
 
-            while (_serverType == _sharedDataSource.CurrentServerType)
-            {
-                //hold until we have changed server.
-            }
+            _parent.WriterAlive = false;
         }
     }
 }

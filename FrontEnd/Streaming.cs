@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Media;
 using System.Windows.Forms;
 
 /*
@@ -12,6 +13,7 @@ namespace FrontEnd
     public partial class Streaming : Form
     {
         private SharedDataSource _sharedDataSource;
+        private SoundPlayer _soundPlayer;
         public Streaming()
         {
             InitializeComponent();

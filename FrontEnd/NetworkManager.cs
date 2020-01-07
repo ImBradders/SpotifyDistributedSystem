@@ -29,6 +29,9 @@ namespace FrontEnd
             set => _nextServer = value;
         }
 
+        public bool ReaderAlive { get; set; }
+        public bool WriterAlive { get; set; }
+
         /// <summary>
         /// This will start the network manager which will deal with all network communications.
         /// </summary>
@@ -52,6 +55,7 @@ namespace FrontEnd
             }
             
             _socket = new Socket(serverDetails.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            _socket.Connect(serverDetails);
             
             //if the code reaches here, we have successfully connected to the communication server
             _sharedDataSource.CurrentServerType = ServerType.Communication;
@@ -64,14 +68,19 @@ namespace FrontEnd
                 NetworkReader reader = new NetworkReader(this, _socket, _sharedDataSource.CurrentServerType);
                 Thread readerThread = new Thread(new ThreadStart(reader.Run));
                 readerThread.Start();
-                
+
                 NetworkWriter writer = new NetworkWriter(this, _socket, _sharedDataSource.CurrentServerType);
                 Thread writerThread = new Thread(new ThreadStart(writer.Run));
                 writerThread.Start();
-    
+
                 //hold while the threads are running
-                while (readerThread.IsAlive && writerThread.IsAlive)
+                while (ReaderAlive && WriterAlive)
                 {}
+
+                if (_socket.Connected)
+                {
+                    _socket.Disconnect(false);
+                }
 
                 if (_nextServer == null) // we need to go back to the communication server and try again.
                 {
@@ -81,6 +90,7 @@ namespace FrontEnd
                         break;
                     }
                     _socket = new Socket(serverDetails.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                    _socket.Connect(serverDetails);
             
                     //if the code reaches here, we have successfully connected to the communication server
                     _sharedDataSource.CurrentServerType = ServerType.Communication;
@@ -93,6 +103,7 @@ namespace FrontEnd
                 else
                 {
                     _socket = new Socket(_nextServer.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                    _socket.Connect(serverDetails);
                     _sharedDataSource.CurrentServerType = _nextServerType;
                     _sharedDataSource.SocketDied = false;
                 }
@@ -113,18 +124,18 @@ namespace FrontEnd
                     string[] splitLine = line.Split(':');
 
                     //remove the whitespace from the string.
-                    foreach (string segment in splitLine)
+                    for (int i = 0; i < splitLine.Length; i++)
                     {
-                        Regex.Replace(segment, @"\s+", "");
+                        splitLine[i] = Regex.Replace(splitLine[i], @"\s+", "");
                     }
 
                     if (splitLine.Length == 2)
                     {
-                        if (splitLine[0] == "IP")
+                        if (splitLine[0].Equals("IP"))
                         {
                             ipAddress = IPAddress.Parse(splitLine[1]);
                         }
-                        else if (splitLine[0] == "PORT")
+                        else if (splitLine[0].Equals("PORT"))
                         {
                             portNumber = int.TryParse(splitLine[1], out portNumber) ? portNumber : -1;
                         }
@@ -171,15 +182,13 @@ namespace FrontEnd
             _sharedDataSource.EmptyMessageQueue();
             
             doComServerStart();
-            if (state == ClientState.LoggedIn)
+            if (state == ClientState.Startup)
             {
                 _sharedDataSource.AddMessage("GETSERVER:LOGIN");
-                _sharedDataSource.AddMessage("DISCONNECT");
             }
-            else if (state == ClientState.Streaming)
+            else if (state == ClientState.LoggedIn)
             {
                 _sharedDataSource.AddMessage("GETSERVER:STREAMING");
-                _sharedDataSource.AddMessage("DISCONNECT");
             }
         }
     }

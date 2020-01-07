@@ -4,7 +4,6 @@
     {
         Startup,
         LoggedIn,
-        Streaming,
         Quitting
     }
 }

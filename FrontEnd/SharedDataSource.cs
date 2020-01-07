@@ -14,11 +14,10 @@ namespace FrontEnd
     public class SharedDataSource
     {
         private static SharedDataSource _instance = null;
-        private Queue<string> _messageQueue;
+        private LinkedList<string> _messageQueue;
         public bool SocketDied { get; set; } = false;
         private ServerType _currentServerType;
         public ClientState ClientState { get; set; }
-        public string ClientKey { get; set; }
         private Queue<string> _userQueue;
 
         public event InterfaceUpdateHandler Updated;
@@ -38,7 +37,7 @@ namespace FrontEnd
         /// </summary>
         private SharedDataSource()
         {
-            _messageQueue = new Queue<string>();
+            _messageQueue = new LinkedList<string>();
             _userQueue = new Queue<string>();
         }
 
@@ -65,7 +64,19 @@ namespace FrontEnd
         {
             lock (_messageQueue)
             {
-                _messageQueue.Enqueue(message);
+                _messageQueue.AddLast(message);
+            }
+        }
+
+        /// <summary>
+        /// There are times where it is necessary for certain messages to be processed first rather than checking for more items in the list. This ensures that.
+        /// </summary>
+        /// <param name="message">The message to be added.</param>
+        public void AddMessageStart(string message)
+        {
+            lock (_messageQueue)
+            {
+                _messageQueue.AddFirst(message);
             }
         }
 
@@ -78,7 +89,15 @@ namespace FrontEnd
             string message;
             lock (_messageQueue)
             {
-                message = _messageQueue.Count > 0 ? _messageQueue.Dequeue() : null;
+                if (_messageQueue.Count > 0)
+                {
+                    message = _messageQueue.First.Value;
+                    _messageQueue.RemoveFirst();
+                }
+                else
+                {
+                    message = null;
+                }
             }
             
             return message;

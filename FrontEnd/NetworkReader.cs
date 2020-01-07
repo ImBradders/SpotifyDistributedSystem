@@ -16,6 +16,7 @@ namespace FrontEnd
         public NetworkReader(NetworkManager parent, Socket socket, ServerType serverType)
         {
             _parent = parent;
+            _parent.ReaderAlive = true;
             _socket = socket;
             _serverType = serverType;
             _connectionState = NetworkConnectionState.Connected;
@@ -68,11 +69,8 @@ namespace FrontEnd
                     _connectionState = NetworkConnectionState.Disconnecting;
                 }
             }
-            
-            while (_serverType == _sharedDataSource.CurrentServerType)
-            {
-                //hold until we have changed server.
-            }
+
+            _parent.ReaderAlive = false;
         }
 
         private void CommunicationProc(string message)
@@ -98,6 +96,7 @@ namespace FrontEnd
                         {
                             IPAddress ipAddr = IPAddress.Parse(ipAddress);
                             _parent.NextServer = new IPEndPoint(ipAddr, portNumber);
+                            _sharedDataSource.AddMessageStart("DISCONNECT");
                         }
                     }
                     else

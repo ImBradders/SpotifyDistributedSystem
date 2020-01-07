@@ -2,6 +2,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 
 /**
  * Handles the connection for each client currently connected to the server.
@@ -180,6 +181,12 @@ public class ConnectionHandler implements Runnable {
                 }
                 //ensure all data is flushed before we start handling the next message.
                 dataOut.flush();
+            }
+        }
+        catch (SocketException se) {
+            if (connectionState != ConnectionState.DISCONNECTING)
+            {
+                se.printStackTrace();
             }
         }
         catch (IOException e) {
