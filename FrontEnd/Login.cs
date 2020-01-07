@@ -6,8 +6,6 @@ namespace FrontEnd
 {
     public partial class Login : Form
     {
-        private string _username;
-        private string _password;
         private SharedDataSource _sharedDataSource;
 
         public Login()
@@ -38,11 +36,13 @@ namespace FrontEnd
             switch (messages[0])
             {
                 case "ERROR":
-
+                    btnLogin.Enabled = true;
+                    lblMessage.Text = messages[1];
                     break;
                 
                 case "AUTH":
-
+                    _sharedDataSource.Updated -= InterfaceUpdated;
+                    //TODO navigate to next form.
                     break;
             }
         }
@@ -54,6 +54,20 @@ namespace FrontEnd
             AccountCreation accountCreation = new AccountCreation();
             accountCreation.Show();
             this.Close();
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            btnLogin.Enabled = false;
+            if (txtUsername.Text != "" && txtPassword.Text != "")
+            {
+                _sharedDataSource.AddMessage("LOGIN:" + txtUsername.Text + ":" + txtPassword.Text);
+                lblMessage.Text = "Waiting for confirmation...";
+            }
+            else
+            {
+                lblMessage.Text = "Please ensure that you enter your username and password.";
+            }
         }
     }
 }
