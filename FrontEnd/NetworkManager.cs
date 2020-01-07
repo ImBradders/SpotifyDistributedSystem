@@ -99,6 +99,8 @@ namespace FrontEnd
                 else
                 {
                     _socket = new Socket(_nextServer.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                    _sharedDataSource.CurrentServerType = _nextServerType;
+                    _sharedDataSource.SocketDied = false;
                 }
             }
         }

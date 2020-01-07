@@ -75,7 +75,7 @@ public class ConnectionHandler implements Runnable {
 
                     case "GET":
                         //send the song file to the streaming server
-                        
+
                         break;
 
                     case "ADD":

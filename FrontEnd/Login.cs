@@ -31,7 +31,29 @@ namespace FrontEnd
         
         private void InterfaceUpdated()
         {
-            _sharedDataSource.GetUserQueue();
+            string message = _sharedDataSource.GetUserQueue();
+
+            string[] messages = message.Split(':');
+
+            switch (messages[0])
+            {
+                case "ERROR":
+
+                    break;
+                
+                case "AUTH":
+
+                    break;
+            }
+        }
+
+        private void btnCreateAccount_Click(object sender, EventArgs e)
+        {
+            // remove the event handler subscription
+            _sharedDataSource.Updated -= InterfaceUpdated;
+            AccountCreation accountCreation = new AccountCreation();
+            accountCreation.Show();
+            this.Close();
         }
     }
 }

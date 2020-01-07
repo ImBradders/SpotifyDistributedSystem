@@ -110,6 +110,7 @@ namespace FrontEnd
             this.btnCreateAccount.TabIndex = 6;
             this.btnCreateAccount.Text = "Create Account";
             this.btnCreateAccount.UseVisualStyleBackColor = true;
+            this.btnCreateAccount.Click += new System.EventHandler(this.btnCreateAccount_Click);
             // 
             // Login
             // 

@@ -11,12 +11,6 @@ Within this document, outlined are the responses that should be received when ce
 
 ## StreamingServer
 
-### Authorise
-
-AUTHORISE : [token] | AUTHORISED
-
-This message allows a given client to authenticate themselves. If they do this, they will be sent regular suggestions as to what they may wish to listen to next.
-
 ### Disconnect
 
 DISCONNECT | DISCONNECT

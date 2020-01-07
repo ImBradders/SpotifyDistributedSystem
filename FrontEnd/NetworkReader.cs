@@ -30,35 +30,42 @@ namespace FrontEnd
             //while we are still connected.
             while (_connectionState == NetworkConnectionState.Connected) 
             {
-                try
+                if (!_sharedDataSource.SocketDied)
                 {
-                    bytesReceived = _socket.Receive(buffer);
-                    string toProcess = Encoding.UTF8.GetString(buffer, 0, bytesReceived);
-                    switch (_serverType)
+                    try
                     {
-                        case ServerType.Communication:
-                            CommunicationProc(toProcess);
-                            break;
-                        case ServerType.Login:
-                            LoginProc(toProcess);
-                            break;
-                        case ServerType.Streaming:
-                            StreamingProc(toProcess);
-                            break;
-                        default:
-                            //something has gone terribly wrong.
+                        bytesReceived = _socket.Receive(buffer);
+                        string toProcess = Encoding.UTF8.GetString(buffer, 0, bytesReceived);
+                        switch (_serverType)
+                        {
+                            case ServerType.Communication:
+                                CommunicationProc(toProcess);
+                                break;
+                            case ServerType.Login:
+                                LoginProc(toProcess);
+                                break;
+                            case ServerType.Streaming:
+                                StreamingProc(toProcess);
+                                break;
+                            default:
+                                //something has gone terribly wrong.
+                                _parent.NextServer = null;
+                                
+                                break;
+                        }
+                    }
+                    catch (SocketException socketException)
+                    {
+                        if (_connectionState != NetworkConnectionState.Disconnecting)
+                        {
+                            //If we quit out of the reader with the next server as null, the network manager will reconnect us to the communication server.
                             _parent.NextServer = null;
-                            
-                            break;
+                        }
                     }
                 }
-                catch (SocketException socketException)
+                else
                 {
-                    if (_connectionState != NetworkConnectionState.Disconnecting)
-                    {
-                        //If we quit out of the reader with the next server as null, the network manager will reconnect us to the communication server.
-                        _parent.NextServer = null;
-                    }
+                    _connectionState = NetworkConnectionState.Disconnecting;
                 }
             }
             
@@ -77,7 +84,8 @@ namespace FrontEnd
                     //handle this
                     break;
                 case "ERROR":
-                    //handle this.
+                    //errors can be handled by the UI
+                    _sharedDataSource.AddUserQueue(message);
                     break;
                 case "IP":
                     if (splitMessage.Length == 4)
@@ -109,12 +117,42 @@ namespace FrontEnd
 
         private void LoginProc(string message)
         {
-            
+            string[] splitMessage = message.Split(':');
+            switch (splitMessage[0])
+            {
+                case "ADDED":
+                case "AUTH":
+                case "ERROR":
+                    _sharedDataSource.AddUserQueue(message);
+                    break;
+                case "DISCONNECT":
+                    
+                    _connectionState = NetworkConnectionState.Disconnecting;
+                    break;
+                default:
+                    //we probably sent a bad message - we should handle this.
+                    break;
+            }
         }
 
         private void StreamingProc(string message)
         {
-            
+            string[] splitMessage = message.Split(':');
+            switch (splitMessage[0])
+            {
+                case "ADDED":
+                case "REMOVED":
+                case "ERROR":
+                    _sharedDataSource.AddUserQueue(message);
+                    break;
+                case "DISCONNECT":
+                    
+                    _connectionState = NetworkConnectionState.Disconnecting;
+                    break;
+                default:
+                    //we probably sent a bad message - we should handle this.
+                    break;
+            }
         }
     }
 }

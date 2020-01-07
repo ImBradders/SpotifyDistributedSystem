@@ -34,15 +34,16 @@ namespace FrontEnd
                         if (messageToSend != null)
                         {
                             string[] parameters = messageToSend.Split(':');
-                            if (parameters[0].Equals("DISCONNECT"))
+                            switch (parameters[0])
                             {
-                                _connectionState = NetworkConnectionState.Disconnecting;
-                            }
-                            else if (parameters[0].Equals("GETSERVER"))
-                            {
-                                ServerType nextServer;
-                                nextServer = Enum.TryParse(parameters[1], true, out nextServer) ? nextServer : ServerType.None;
-                                _parent.NextServerType = nextServer;
+                                case "DISCONNECT":
+                                    _connectionState = NetworkConnectionState.Disconnecting;
+                                    break;
+                                case "GETSERVER":
+                                    ServerType nextServer;
+                                    nextServer = Enum.TryParse(parameters[1], true, out nextServer) ? nextServer : ServerType.None;
+                                    _parent.NextServerType = nextServer;
+                                    break;
                             }
                             byte[] buffer = new byte[messageToSend.Length];
                             int bytesToSend = Encoding.UTF8.GetBytes(messageToSend, 0, messageToSend.Length, buffer, 0);
