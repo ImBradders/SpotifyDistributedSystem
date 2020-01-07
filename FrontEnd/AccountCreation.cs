@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -39,7 +40,23 @@ namespace FrontEnd
 
         private void InterfaceUpdated()
         {
-            lblOutput.Text = _sharedDataSource.GetUserQueue();
+            string message = _sharedDataSource.GetUserQueue();
+            string[] messages = message.Split(':');
+
+            switch (messages[0])
+            {
+                case "ADDED":
+                    lblOutput.Text = "Added successfully";
+                    Thread.Sleep(5000);
+                    _sharedDataSource.Updated -= InterfaceUpdated;
+                    Login login = new Login();
+                    login.Show();
+                    this.Close();
+                    break;
+                default:
+                    lblOutput.Text = messages[1];
+                    break;
+            }
         }
     }
 }

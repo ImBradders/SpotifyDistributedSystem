@@ -50,17 +50,23 @@ public class SharedDataStore {
         switch (serverType) {
             case LOGIN:
                 synchronized (loginServers) {
-                    toReturn = loginServers.get(numberGen.nextInt(loginServers.size()));
+                    if (loginServers.size() > 0) {
+                        toReturn = loginServers.get(numberGen.nextInt(loginServers.size()));
+                    }
                 }
                 break;
             case STORAGE:
                 synchronized (storageServers) {
-                    toReturn = storageServers.get(numberGen.nextInt(storageServers.size()));
+                    if (storageServers.size() > 0) {
+                        toReturn = storageServers.get(numberGen.nextInt(storageServers.size()));
+                    }
                 }
                 break;
             case STREAMING:
                 synchronized (streamingServers) {
-                    toReturn = streamingServers.get(numberGen.nextInt(streamingServers.size()));
+                    if (streamingServers.size() > 0) {
+                        toReturn = streamingServers.get(numberGen.nextInt(streamingServers.size()));
+                    }
                 }
                 break;
             default:

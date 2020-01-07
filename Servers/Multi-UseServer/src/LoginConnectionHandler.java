@@ -99,7 +99,6 @@ public class LoginConnectionHandler extends ConnectionHandler {
     private String addUser(String username, String password) {
         List<String> messages = new ArrayList<String>();
         messages.add("ADD:"+username+":"+password);
-        messages.add("LOGIN:"+username+":"+password);
         messages = messageStorageServer(messages);
 
         for (String message : messages) {

@@ -42,7 +42,7 @@ public class StorageServer {
             }
 
             //login details storage
-            file = new File(System.getProperty("user.dir") + fileSeparator + "MusicBank");
+            file = new File(System.getProperty("user.dir") + fileSeparator + "LoginDetails.txt");
             if (!file.exists()) {
                 //we were unable to find the music storage
                 if (!file.mkdirs()) {
@@ -50,12 +50,15 @@ public class StorageServer {
                     return false;
                 }
             }
-            String loginStorage = file.toString() + fileSeparator;
+            String loginStorage = file.toString();
 
             if (!(file.canWrite() && file.canRead())) {
                 //we cannot read and write to the specified file location - therefore we are useless.
                 return false;
             }
+
+            LoginDetailsList loginDetailsList = LoginDetailsList.getInstance();
+            loginDetailsList.loadFromFile(loginStorage);
 
             //contact the communication server to tell it that we exist
             boolean communicationServerContacted = contactCommunicationServer();

@@ -25,16 +25,15 @@ public class ConnectionHandler implements Runnable {
      */
     public ConnectionHandler(Socket inSoc) {
         socket = inSoc;
+        dataStore = SharedDataStore.getInstance();
     }
 
     /**
      * This allows the class to implement runnable so that the class will run as a thread when called to do so.
      */
+    @Override
     public void run() {
         try {
-            //get the shared data store
-            dataStore = SharedDataStore.getInstance();
-
             //attempt to get data streams
             dataIn = new DataInputStream(socket.getInputStream());
             dataOut = new DataOutputStream(socket.getOutputStream());

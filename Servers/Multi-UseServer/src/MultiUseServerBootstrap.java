@@ -33,7 +33,8 @@ public class MultiUseServerBootstrap {
                 portNumberToUse = validatePort("0"); //this should get us any available port.
                 break;
             default: // nothing provided
-                serverTypeToSpawn = "streaming"; //spawn streaming servers by default
+                serverTypeToSpawn = "login";
+                //serverTypeToSpawn = "streaming"; //spawn streaming servers by default
                 portNumberToUse = validatePort("0"); //this should get us any available port.
                 break;
         }

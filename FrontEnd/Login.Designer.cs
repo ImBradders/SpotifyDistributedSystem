@@ -38,6 +38,7 @@ namespace FrontEnd
             this.txtPassword = new System.Windows.Forms.TextBox();
             this.btnLogin = new System.Windows.Forms.Button();
             this.btnCreateAccount = new System.Windows.Forms.Button();
+            this.lblError = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // lblMessage
@@ -113,11 +114,22 @@ namespace FrontEnd
             this.btnCreateAccount.UseVisualStyleBackColor = true;
             this.btnCreateAccount.Click += new System.EventHandler(this.btnCreateAccount_Click);
             // 
+            // lblError
+            // 
+            this.lblError.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular,
+                System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.lblError.Location = new System.Drawing.Point(13, 242);
+            this.lblError.Name = "lblError";
+            this.lblError.Size = new System.Drawing.Size(332, 69);
+            this.lblError.TabIndex = 7;
+            this.lblError.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // Login
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(357, 367);
+            this.Controls.Add(this.lblError);
             this.Controls.Add(this.btnCreateAccount);
             this.Controls.Add(this.btnLogin);
             this.Controls.Add(this.label2);
@@ -141,5 +153,6 @@ namespace FrontEnd
         private System.Windows.Forms.TextBox txtUsername;
         private System.Windows.Forms.Button btnCreateAccount;
         private System.Windows.Forms.Button btnLogin;
+        private System.Windows.Forms.Label lblError;
     }
 }

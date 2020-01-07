@@ -98,6 +98,8 @@ public class ConnectionHandler implements Runnable {
                         //add an account
                         buffer = MessageConverter.stringToByte(processAddUser(arguments));
                         dataOutputStream.write(buffer);
+                        dataOutputStream.flush();
+                        loginDetailsList.writeToFile(loginStorage);
                         break;
 
                     case "LOGIN":

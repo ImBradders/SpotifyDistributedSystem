@@ -37,7 +37,7 @@ public class CommunicationServer {
 
                 ConnectionHandler connectionHandler = new ConnectionHandler(socket);
                 Thread handleConnection = new Thread(connectionHandler);
-                handleConnection.setName(socket.getLocalSocketAddress().toString());
+                //handleConnection.setName(socket.getLocalSocketAddress().toString());
                 handleConnection.start();
             }
         }

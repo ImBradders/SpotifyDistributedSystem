@@ -62,11 +62,11 @@ namespace FrontEnd
             if (txtUsername.Text != "" && txtPassword.Text != "")
             {
                 _sharedDataSource.AddMessage("LOGIN:" + txtUsername.Text + ":" + txtPassword.Text);
-                lblMessage.Text = "Waiting for confirmation...";
+                lblError.Text = "Waiting for confirmation...";
             }
             else
             {
-                lblMessage.Text = "Please ensure that you enter your username and password.";
+                lblError.Text = "Please ensure that you enter your username and password.";
             }
         }
     }
