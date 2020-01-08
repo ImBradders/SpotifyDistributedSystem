@@ -36,7 +36,8 @@ public class SongStreamer implements Runnable {
                     dataOutputStream.flush();
                 }
 
-                streamerStatus = StreamerStatus.COMPLETED;
+                dataOutputStream.write(MessageConverter.stringToByte("EOF:EOF:EOF"));
+                dataOutputStream.flush();
             }
             catch (FileNotFoundException e) {
                 streamerStatus = StreamerStatus.DIED;
@@ -47,6 +48,7 @@ public class SongStreamer implements Runnable {
                 e.printStackTrace();
             }
         }
+        streamerStatus = StreamerStatus.COMPLETED;
     }
 
     public StreamerStatus getStreamerStatus() {
