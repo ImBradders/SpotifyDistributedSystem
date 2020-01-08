@@ -150,8 +150,18 @@ namespace FrontEnd
             {
                 case "ADDED":
                 case "REMOVED":
+                case "SONG":
                 case "ERROR":
                     _sharedDataSource.AddUserQueue(message);
+                    break;
+                case "EOF":
+                    if (splitMessage.Length == 3)
+                    {
+                        if (splitMessage[1].Equals("EOF") && splitMessage[2].Equals("EOF"))
+                        {
+                            _sharedDataSource.AddUserQueue("EOF");
+                        }
+                    }
                     break;
                 case "DISCONNECT":
                     
