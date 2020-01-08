@@ -33,4 +33,8 @@ public class StreamingSongQueue {
         }
         return songQueue.remove();
     }
+
+    public synchronized boolean isEmpty() {
+        return songQueue.isEmpty();
+    }
 }

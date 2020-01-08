@@ -19,6 +19,7 @@ public class StreamingConnectionHandler extends ConnectionHandler {
     private final String cachedStorage;
     private final String fileSeparator;
     private StreamingSongQueue songQueue;
+    private SongStreamer songStreamer;
 
     public StreamingConnectionHandler(Socket socket, String cachedStorageLocation, ServerConnectionDetails communicationServer) {
         super(socket, communicationServer);
@@ -130,8 +131,19 @@ public class StreamingConnectionHandler extends ConnectionHandler {
             if (songsFound.size() > 0) {
                 String toAdd = songsFound.get(randomNumberGenerator.nextInt(songsFound.size()));
                 songQueue.enqueue(toAdd);
+                if (songStreamer == null) {
+                    songStreamer = new SongStreamer(dataOutputStream, songQueue);
+                    Thread songStreamerThread = new Thread(songStreamer);
+                    songStreamerThread.start();
+                }
+                else if (songStreamer.getStreamerStatus() == StreamerStatus.DIED || songStreamer.getStreamerStatus() == StreamerStatus.COMPLETED) {
+                    songStreamer = new SongStreamer(dataOutputStream, songQueue);
+                    Thread songStreamerThread = new Thread(songStreamer);
+                    songStreamerThread.start();
+                }
                 return "ADDED:" + toAdd;
-            } else {
+            }
+            else {
                 return "ERROR:Song not in cache.";
             }
         }

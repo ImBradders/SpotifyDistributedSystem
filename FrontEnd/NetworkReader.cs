@@ -120,7 +120,16 @@ namespace FrontEnd
             switch (splitMessage[0])
             {
                 case "ADDED":
+                    _sharedDataSource.AddUserQueue(message);
+                    break;
                 case "AUTH":
+                    _sharedDataSource.AddUserQueue(message);
+                    _sharedDataSource.AddMessage("DISCONNECT");
+                    _parent.NextServer = _parent.CommServerDetails; //we need to go back to the connection server.
+                    _parent.NextServerType = ServerType.Communication;
+                    _sharedDataSource.AddMessage("CLIENT");
+                    _sharedDataSource.AddMessage("GETSERVER:STREAMING");
+                    break;
                 case "ERROR":
                     _sharedDataSource.AddUserQueue(message);
                     break;

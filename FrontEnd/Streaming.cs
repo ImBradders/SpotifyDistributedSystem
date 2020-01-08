@@ -12,12 +12,14 @@ namespace FrontEnd
 {
     public partial class Streaming : Form
     {
+        private Form _parent;
         private SharedDataSource _sharedDataSource;
         private SoundPlayer _soundPlayer;
-        public Streaming()
+        public Streaming(Form parent)
         {
-            InitializeComponent();
+            _parent = parent;
             _sharedDataSource = SharedDataSource.GetInstance();
+            InitializeComponent();
             _sharedDataSource.Updated += InterfaceUpdated;
             btnPause.Enabled = false;
             btnPlay.Enabled = false;

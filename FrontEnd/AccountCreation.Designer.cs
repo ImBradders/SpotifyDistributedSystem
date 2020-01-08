@@ -40,6 +40,9 @@ namespace FrontEnd
             this.btnCreateAccount = new System.Windows.Forms.Button();
             this.lblOutput = new System.Windows.Forms.Label();
             this.SuspendLayout();
+            // 
+            // label1
+            // 
             this.label1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label1.Location = new System.Drawing.Point(12, 15);
@@ -47,12 +50,18 @@ namespace FrontEnd
             this.label1.Size = new System.Drawing.Size(100, 23);
             this.label1.TabIndex = 0;
             this.label1.Text = "Username";
+            // 
+            // txtUsername
+            // 
             this.txtUsername.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.txtUsername.Location = new System.Drawing.Point(118, 12);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(207, 29);
             this.txtUsername.TabIndex = 1;
+            // 
+            // txtPassword
+            // 
             this.txtPassword.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.txtPassword.Location = new System.Drawing.Point(118, 65);
@@ -60,6 +69,9 @@ namespace FrontEnd
             this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(207, 29);
             this.txtPassword.TabIndex = 3;
+            // 
+            // label2
+            // 
             this.label2.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label2.Location = new System.Drawing.Point(12, 68);
@@ -67,6 +79,9 @@ namespace FrontEnd
             this.label2.Size = new System.Drawing.Size(100, 23);
             this.label2.TabIndex = 2;
             this.label2.Text = "Password";
+            // 
+            // txtPasswordReEnter
+            // 
             this.txtPasswordReEnter.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.txtPasswordReEnter.Location = new System.Drawing.Point(118, 119);
@@ -74,6 +89,9 @@ namespace FrontEnd
             this.txtPasswordReEnter.PasswordChar = '*';
             this.txtPasswordReEnter.Size = new System.Drawing.Size(207, 29);
             this.txtPasswordReEnter.TabIndex = 5;
+            // 
+            // label3
+            // 
             this.label3.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.label3.Location = new System.Drawing.Point(12, 110);
@@ -81,15 +99,21 @@ namespace FrontEnd
             this.label3.Size = new System.Drawing.Size(100, 48);
             this.label3.TabIndex = 4;
             this.label3.Text = "Re Enter Password";
+            // 
+            // btnCreateAccount
+            // 
             this.btnCreateAccount.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.btnCreateAccount.Location = new System.Drawing.Point(118, 174);
             this.btnCreateAccount.Name = "btnCreateAccount";
-            this.btnCreateAccount.Size = new System.Drawing.Size(104, 64);
+            this.btnCreateAccount.Size = new System.Drawing.Size(104, 63);
             this.btnCreateAccount.TabIndex = 6;
             this.btnCreateAccount.Text = "Create Account";
             this.btnCreateAccount.UseVisualStyleBackColor = true;
             this.btnCreateAccount.Click += new System.EventHandler(this.btnCreateAccount_Click);
+            // 
+            // lblOutput
+            // 
             this.lblOutput.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.lblOutput.Location = new System.Drawing.Point(12, 241);
@@ -97,6 +121,9 @@ namespace FrontEnd
             this.lblOutput.Size = new System.Drawing.Size(313, 48);
             this.lblOutput.TabIndex = 7;
             this.lblOutput.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            // 
+            // AccountCreation
+            // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(337, 298);
@@ -110,6 +137,8 @@ namespace FrontEnd
             this.Controls.Add(this.label1);
             this.Name = "AccountCreation";
             this.Text = "AccountCreation";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AccountCreation_FormClosed);
+            this.Load += new System.EventHandler(this.AccountCreation_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
         }

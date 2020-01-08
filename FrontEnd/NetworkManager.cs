@@ -28,6 +28,8 @@ namespace FrontEnd
         {
             set => _nextServer = value;
         }
+        
+        public IPEndPoint CommServerDetails { get; set; }
 
         public bool ReaderAlive { get; set; }
         public bool WriterAlive { get; set; }
@@ -59,6 +61,7 @@ namespace FrontEnd
             
             //if the code reaches here, we have successfully connected to the communication server
             _sharedDataSource.CurrentServerType = ServerType.Communication;
+            CommServerDetails = serverDetails;
             doComServerStart();
 
             _sharedDataSource.SocketDied = false;
@@ -82,30 +85,34 @@ namespace FrontEnd
                     _socket.Disconnect(false);
                 }
 
-                if (_nextServer == null) // we need to go back to the communication server and try again.
+                if (_sharedDataSource.ClientState != ClientState.Quitting)
                 {
-                    serverDetails = loadCommServerDetails();
-                    if (serverDetails == null) //if we cannot load the server details, we may as well give up
+                    if (_nextServer == null) // we need to go back to the communication server and try again.
                     {
-                        break;
+                        serverDetails = loadCommServerDetails();
+                        if (serverDetails == null) //if we cannot load the server details, we may as well give up
+                        {
+                            break;
+                        }
+                        _socket = new Socket(serverDetails.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                        _socket.Connect(serverDetails);
+                
+                        //if the code reaches here, we have successfully connected to the communication server
+                        _sharedDataSource.CurrentServerType = ServerType.Communication;
+                        CommServerDetails = serverDetails;
+                        doComServerStart();
+    
+                        _sharedDataSource.SocketDied = false;
+                        
+                        restoreState(_sharedDataSource.ClientState); //restore to the state we were at before we dropped the network connection.
                     }
-                    _socket = new Socket(serverDetails.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    _socket.Connect(serverDetails);
-            
-                    //if the code reaches here, we have successfully connected to the communication server
-                    _sharedDataSource.CurrentServerType = ServerType.Communication;
-                    doComServerStart();
-
-                    _sharedDataSource.SocketDied = false;
-                    
-                    restoreState(_sharedDataSource.ClientState); //restore to the state we were at before we dropped the network connection.
-                }
-                else
-                {
-                    _socket = new Socket(_nextServer.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    _socket.Connect(serverDetails);
-                    _sharedDataSource.CurrentServerType = _nextServerType;
-                    _sharedDataSource.SocketDied = false;
+                    else
+                    {
+                        _socket = new Socket(_nextServer.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                        _socket.Connect(_nextServer);
+                        _sharedDataSource.CurrentServerType = _nextServerType;
+                        _sharedDataSource.SocketDied = false;
+                    }
                 }
             }
         }

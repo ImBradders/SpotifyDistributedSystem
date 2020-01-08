@@ -97,7 +97,9 @@ namespace FrontEnd
 
         private void Login_FormClosed(object sender, FormClosedEventArgs e)
         {
-
+            //disconnect from the server.
+            _sharedDataSource.AddMessage("DISCONNECT");
+            _sharedDataSource.ClientState = ClientState.Quitting;
         }
     }
 }
