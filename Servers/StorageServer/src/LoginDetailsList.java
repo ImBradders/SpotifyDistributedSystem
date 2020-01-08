@@ -123,7 +123,14 @@ public class LoginDetailsList {
         File userDetailsFile = new File(filePath);
         try {
             if (!userDetailsFile.exists()) {
-                if (!userDetailsFile.createNewFile()) {
+                //if the login file does not exist, create it.
+                try {
+                    byte[] data = new byte[] {};
+                    FileOutputStream outputStream = new FileOutputStream(filePath);
+                    outputStream.write(data);
+                    outputStream.close();
+                }
+                catch (IOException e) {
                     return false;
                 }
             }

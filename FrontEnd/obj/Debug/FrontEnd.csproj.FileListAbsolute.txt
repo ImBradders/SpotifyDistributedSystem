@@ -4,7 +4,6 @@ F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\bin\D
 F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.csprojAssemblyReference.cache
 F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.Properties.Resources.resources
 F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.csproj.GenerateResource.cache
-F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.csproj.CoreCompileInputs.cache
 F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.exe
 F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.pdb
 F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.Form1.resources
@@ -21,3 +20,6 @@ E:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\D
 E:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.csproj.CoreCompileInputs.cache
 E:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.exe
 E:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.pdb
+F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.AccountCreation.resources
+F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.Login.resources
+F:\Files\Uni\Year3\Distributed Systems\Spotify Distributed System\FrontEnd\obj\Debug\FrontEnd.Streaming.resources

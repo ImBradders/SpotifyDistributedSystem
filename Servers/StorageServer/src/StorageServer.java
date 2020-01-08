@@ -44,9 +44,14 @@ public class StorageServer {
             //login details storage
             file = new File(System.getProperty("user.dir") + fileSeparator + "LoginDetails.txt");
             if (!file.exists()) {
-                //we were unable to find the music storage
-                if (!file.mkdirs()) {
-                    //we were unable to create the music storage.
+                //if the login file does not exist, create it.
+                try {
+                    byte[] data = new byte[] {};
+                    FileOutputStream outputStream = new FileOutputStream(file.getName());
+                    outputStream.write(data);
+                    outputStream.close();
+                }
+                catch (IOException e) {
                     return false;
                 }
             }
