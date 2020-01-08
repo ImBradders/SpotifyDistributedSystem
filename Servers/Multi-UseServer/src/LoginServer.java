@@ -75,7 +75,7 @@ public class LoginServer extends BaseServer {
             communicationServerOutput.write(MessageConverter.stringToByte("SERVER"));
             communicationServerOutput.flush();
 
-            communicationServerOutput.write(MessageConverter.stringToByte("SERVERTYPE:LOGIN"));
+            communicationServerOutput.write(MessageConverter.stringToByte("SERVERTYPE:LOGIN:" + portNumber));
             communicationServerOutput.flush();
 
             messageSize = communicationServerInput.read(buffer);

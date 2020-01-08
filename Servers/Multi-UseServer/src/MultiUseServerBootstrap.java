@@ -45,12 +45,12 @@ public class MultiUseServerBootstrap {
         }
 
         if (serverTypeToSpawn.equalsIgnoreCase("streaming")) {
-            System.out.println("Spawning streaming server.");
+            System.out.println("Spawning streaming server on " + portNumberToUse);
             StreamingServer streamingServer = new StreamingServer(portNumberToUse);
             streamingServer.start();
         }
         else if (serverTypeToSpawn.equalsIgnoreCase("login")) {
-            System.out.println("Spawning login server.");
+            System.out.println("Spawning login server on " + portNumberToUse);
             LoginServer loginServer = new LoginServer(portNumberToUse);
             loginServer.start();
         }
@@ -101,6 +101,7 @@ public class MultiUseServerBootstrap {
         try {
             socket = new ServerSocket(portNumber);
             socketOpened = true;
+            portNumber = socket.getLocalPort();
         }
         catch (IOException e) {
             System.out.println("Port is unavailable.");

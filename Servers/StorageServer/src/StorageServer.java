@@ -120,7 +120,7 @@ public class StorageServer {
             communicationServerOutput.write(MessageConverter.stringToByte("SERVER"));
             communicationServerOutput.flush();
 
-            communicationServerOutput.write(MessageConverter.stringToByte("SERVERTYPE:STORAGE"));
+            communicationServerOutput.write(MessageConverter.stringToByte("SERVERTYPE:STORAGE:"+portNumber));
             communicationServerOutput.flush();
 
             messageSize = communicationServerInput.read(buffer);

@@ -71,6 +71,7 @@ public class StorageServerBootstrap {
         try {
             socket = new ServerSocket(portNumber);
             socketOpened = true;
+            portNumber = socket.getLocalPort();
         }
         catch (IOException e) {
             System.out.println("Port is unavailable.");

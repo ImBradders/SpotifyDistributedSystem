@@ -39,7 +39,7 @@ If the client sends a message that is not supported by the server, MESSAGEUNSUPP
 ## Server Messages Handled
 
 ### Server Type
-SERVERTYPE | TYPESTORED
+SERVERTYPE : [type] : [listening port]| TYPESTORED
 
 Allows the remote server to tell the Communication Server what type of server it is.
 
