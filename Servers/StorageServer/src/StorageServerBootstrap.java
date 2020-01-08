@@ -35,6 +35,7 @@ public class StorageServerBootstrap {
             return;
         }
 
+        System.out.println("Spawning Storage server on " + portNumberToUse);
         StorageServer storageServer = new StorageServer(portNumberToUse);
         storageServer.start();
     }

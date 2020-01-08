@@ -24,6 +24,8 @@ public class ConnectionHandler implements Runnable {
     protected ConnectionHandler(Socket socket, ServerConnectionDetails communicationServer) {
         this.socket = socket;
         this.communicationServer = communicationServer;
+        this.buffer = new byte[200];
+        bytesRead = 0;
     }
 
     @Override

@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace FrontEnd
 {
     public partial class AccountCreation : Form
     {
+        private Form _parent;
         private SharedDataSource _sharedDataSource;
-        public AccountCreation()
+        public AccountCreation(Form parent)
         {
-            InitializeComponent();
+            _parent = parent;
             _sharedDataSource = SharedDataSource.GetInstance();
+            InitializeComponent();
             _sharedDataSource.Updated += InterfaceUpdated;
         }
 
@@ -46,17 +48,64 @@ namespace FrontEnd
             switch (messages[0])
             {
                 case "ADDED":
-                    lblOutput.Text = "Added successfully";
-                    Thread.Sleep(5000);
+                    SetControlPropertyThreadSafe(lblOutput, "Text", "Added successfully");
+                    Thread.Sleep(2000);
                     _sharedDataSource.Updated -= InterfaceUpdated;
-                    Login login = new Login();
-                    login.Show();
-                    this.Close();
+                    _parent.Visible = true;
+                    CloseForm(this);
                     break;
                 default:
-                    lblOutput.Text = messages[1];
+                    SetControlPropertyThreadSafe(lblOutput, "Text", messages[1]);
                     break;
             }
+        }
+
+        private delegate void CloseFormDelegate(Form form);
+
+        private static void CloseForm(Form form)
+        {
+            if (form.InvokeRequired)
+            {
+                form.Invoke(new CloseFormDelegate(CloseForm), form);
+            }
+            else
+            {
+                form.Close();
+            }
+        }
+        
+        private delegate void SetControlPropertyThreadSafeDelegate(
+            Control control, 
+            string propertyName, 
+            object propertyValue);
+
+        public static void SetControlPropertyThreadSafe(Control control, string propertyName, object propertyValue)
+        {
+            if (control.InvokeRequired)
+            {
+                control.Invoke(new SetControlPropertyThreadSafeDelegate               
+                        (SetControlPropertyThreadSafe), 
+                    new object[] { control, propertyName, propertyValue });
+            }
+            else
+            {
+                control.GetType().InvokeMember(
+                    propertyName, 
+                    BindingFlags.SetProperty, 
+                    null, 
+                    control, 
+                    new object[] { propertyValue });
+            }
+        }
+
+        private void AccountCreation_Load(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void AccountCreation_FormClosed(object sender, FormClosedEventArgs e)
+        {
+
         }
     }
 }

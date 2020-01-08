@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace FrontEnd
@@ -11,21 +10,19 @@ namespace FrontEnd
 
         public Login()
         {
-            InitializeComponent();
             _sharedDataSource = SharedDataSource.GetInstance();
+            InitializeComponent();
             _sharedDataSource.Updated += InterfaceUpdated;
         }
         
         private void Login_Load(object sender, EventArgs e)
         {
-            _sharedDataSource.ClientState = ClientState.Startup;
-            
-            NetworkManager networkManager = new NetworkManager();
-            Thread networkManagerThread = new Thread(new ThreadStart(networkManager.Run));
-            networkManagerThread.Start();
-            
-            //this will get put out to the network to get us a login server.
-            _sharedDataSource.AddMessage("GETSERVER:LOGIN");
+            if (_sharedDataSource.CurrentServerType != ServerType.Login)
+            {
+                _sharedDataSource.ClientState = ClientState.Startup;
+
+                _sharedDataSource.AddMessage("GETSERVER:LOGIN");
+            }
         }
         
         private void InterfaceUpdated()
@@ -44,9 +41,9 @@ namespace FrontEnd
                 case "AUTH":
                     _sharedDataSource.Updated -= InterfaceUpdated;
                     _sharedDataSource.ClientState = ClientState.LoggedIn;
-                    Streaming streaming = new Streaming();
+                    Streaming streaming = new Streaming(this);
                     streaming.Show();
-                    this.Close();
+                    this.Visible = false;
                     break;
             }
         }
@@ -79,9 +76,9 @@ namespace FrontEnd
         {
             // remove the event handler subscription
             _sharedDataSource.Updated -= InterfaceUpdated;
-            AccountCreation accountCreation = new AccountCreation();
+            AccountCreation accountCreation = new AccountCreation(this);
             accountCreation.Show();
-            this.Close();
+            this.Visible = false;
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -96,6 +93,11 @@ namespace FrontEnd
             {
                 lblError.Text = "Please ensure that you enter your username and password.";
             }
+        }
+
+        private void Login_FormClosed(object sender, FormClosedEventArgs e)
+        {
+
         }
     }
 }
