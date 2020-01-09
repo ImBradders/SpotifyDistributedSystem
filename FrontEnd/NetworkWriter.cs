@@ -32,6 +32,8 @@ namespace FrontEnd
                     try
                     {
                         messageToSend = _sharedDataSource.GetMessage();
+                        while (_sharedDataSource.IsStreaming) //dont send anything while streaming.
+                        {}
                         if (messageToSend != null)
                         {
                             string[] parameters = messageToSend.Split(':');

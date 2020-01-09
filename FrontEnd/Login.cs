@@ -34,16 +34,19 @@ namespace FrontEnd
             switch (messages[0])
             {
                 case "ERROR":
-                    btnLogin.Enabled = true;
-                    SetControlPropertyThreadSafe(lblMessage, "Text", messages[1]);
+                    SetControlPropertyThreadSafe(btnLogin, "Enabled", true);
+                    SetControlPropertyThreadSafe(lblError, "Text", messages[1]);
                     break;
                 
                 case "AUTH":
                     _sharedDataSource.Updated -= InterfaceUpdated;
                     _sharedDataSource.ClientState = ClientState.LoggedIn;
-                    Streaming streaming = new Streaming(this);
-                    streaming.Show();
-                    this.Visible = false;
+                    Invoke(new MethodInvoker(() =>
+                    {
+                        Streaming streaming = new Streaming(this);
+                        streaming.Show();
+                        Visible = false;
+                    }));
                     break;
             }
         }
@@ -100,6 +103,14 @@ namespace FrontEnd
             //disconnect from the server.
             _sharedDataSource.AddMessage("DISCONNECT");
             _sharedDataSource.ClientState = ClientState.Quitting;
+        }
+
+        private void Login_VisibleChanged(object sender, EventArgs e)
+        {
+            txtPassword.Text = "";
+            txtUsername.Text = "";
+            lblError.Text = "";
+            btnLogin.Enabled = true;
         }
     }
 }

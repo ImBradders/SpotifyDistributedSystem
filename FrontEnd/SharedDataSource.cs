@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace FrontEnd
 {
     public delegate void InterfaceUpdateHandler();
+
+    public delegate void SongReadyHandler();
     /// <summary>
     /// This will be the shared data source for the system.
     ///
@@ -19,6 +22,18 @@ namespace FrontEnd
         private ServerType _currentServerType;
         public ClientState ClientState { get; set; }
         private Queue<string> _userQueue;
+        private LinkedList<MemoryStream> _memoryStreams;
+
+        public event SongReadyHandler SongReady;
+
+        public void OnSongReady()
+        {
+            SongReadyHandler handler = SongReady;
+            if (handler != null)
+            {
+                handler();
+            }
+        }
 
         public event InterfaceUpdateHandler Updated;
 
@@ -39,6 +54,7 @@ namespace FrontEnd
         {
             _messageQueue = new LinkedList<string>();
             _userQueue = new Queue<string>();
+            _memoryStreams = new LinkedList<MemoryStream>();
         }
 
         /// <summary>
@@ -49,7 +65,36 @@ namespace FrontEnd
         {
             return _instance ?? (_instance = new SharedDataSource());
         }
-        
+
+        public void NewSong()
+        {
+            lock (_memoryStreams)
+            {
+                _memoryStreams.AddLast(new MemoryStream());
+            }
+        }
+        public void AddMemoryStream(byte[] bytes, int amount)
+        {
+            lock (_memoryStreams)
+            {
+                _memoryStreams.Last.Value.Write(bytes, 0 , amount);
+            }
+        }
+
+        public MemoryStream RemoveMemoryStream()
+        {
+            MemoryStream toReturn;
+            lock (_memoryStreams)
+            {
+                toReturn = _memoryStreams.First.Value;
+                _memoryStreams.RemoveFirst();
+            }
+
+            return toReturn;
+        }
+
+        public bool IsStreaming { get; set; }
+
         public ServerType CurrentServerType
         {
             get => _currentServerType;

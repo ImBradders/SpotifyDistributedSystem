@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Media;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -19,25 +20,22 @@ namespace FrontEnd
         private Form _parent;
         private SharedDataSource _sharedDataSource;
         private SoundPlayer _soundPlayer;
-        private Thread _player;
-        private LinkedList<MemoryStream> _memoryStreams;
-        
+
         public Streaming(Form parent)
         {
             _parent = parent;
-            _memoryStreams = new LinkedList<MemoryStream>();
-            _memoryStreams.AddFirst(new MemoryStream());
-            _player = new Thread(RunPlayer);
             _sharedDataSource = SharedDataSource.GetInstance();
-            InitializeComponent();
             _sharedDataSource.Updated += InterfaceUpdated;
+            _sharedDataSource.SongReady += OnSongReady;
+            InitializeComponent();
             btnPause.Enabled = false;
             btnPlay.Enabled = false;
+            
         }
 
         private void Streaming_Load(object sender, EventArgs e)
         {
-            _sharedDataSource.AddMessage("SONGLIST");
+            
         }
 
         private void InterfaceUpdated()
@@ -49,19 +47,10 @@ namespace FrontEnd
             switch (messages[0])
             {
                 case "SONGS":
-                    lstSongs.Items.Add(messages[1]);
+                    AddListControlPropertyThreadSafe(lstSongs, messages[1]);
                     break;
-                case "SONG":
-                    byte[] buffer = new byte[2048];
-                    int size = Encoding.UTF8.GetBytes(messages[1], 0, messages[1].Length, buffer, 0);
-                    _memoryStreams.Last.Value.Write(buffer, 0, size);
-                    if (!_player.IsAlive)
-                    {
-                        _player.Start();
-                    }
-                    break;
-                case "EOF":
-                    _memoryStreams.AddLast(new MemoryStream());
+                case "ERROR":
+                    SetControlPropertyThreadSafe(lblErrors, "Text", messages[1]);
                     break;
             }
         }
@@ -99,14 +88,90 @@ namespace FrontEnd
             btnPause.Enabled = true;
         }
 
-        private void RunPlayer()
+        #region ThreadSafety
+
+        private delegate void SetControlPropertyThreadSafeDelegate(
+                    Control control, 
+                    string propertyName, 
+                    object propertyValue);
+        
+                private static void SetControlPropertyThreadSafe(Control control, string propertyName, object propertyValue)
+                {
+                    if (control.InvokeRequired)
+                    {
+                        control.Invoke(new SetControlPropertyThreadSafeDelegate               
+                                (SetControlPropertyThreadSafe), 
+                            new object[] { control, propertyName, propertyValue });
+                    }
+                    else
+                    {
+                        control.GetType().InvokeMember(
+                            propertyName, 
+                            BindingFlags.SetProperty, 
+                            null, 
+                            control, 
+                            new object[] { propertyValue });
+                    }
+                }
+                
+                private delegate void AddListControlPropertyThreadSafeDelegate(
+                    ListBox control,
+                    object propertyValue);
+        
+                private static void AddListControlPropertyThreadSafe(ListBox control, object propertyValue)
+                {
+                    if (control.InvokeRequired)
+                    {
+                        control.Invoke(new AddListControlPropertyThreadSafeDelegate               
+                                (AddListControlPropertyThreadSafe), 
+                            new object[] { control, propertyValue });
+                    }
+                    else
+                    {
+                        control.Items.Add(propertyValue.ToString());
+                    }
+                }
+
+        #endregion
+
+        private void OnSongReady()
         {
-            while (_memoryStreams.Count > 0)
-            {
-                _soundPlayer = new SoundPlayer(_memoryStreams.First.Value);
-                _soundPlayer.PlaySync();
-                _memoryStreams.RemoveFirst();
-            }
+            while (_soundPlayer != null)
+            {}
+
+            MemoryStream memoryStream = _sharedDataSource.RemoveMemoryStream();
+            memoryStream.Position = 0;
+            _soundPlayer = new SoundPlayer(memoryStream);
+            _soundPlayer.PlaySync();
+            _soundPlayer.Dispose();
+            _soundPlayer = null;
+        }
+        
+        private void btnLoadSongs_Click(object sender, EventArgs e)
+        {
+            _sharedDataSource.AddMessage("SONGLIST");
+        }
+
+        private void Streaming_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            _sharedDataSource.Updated -= InterfaceUpdated;
+            _sharedDataSource.SongReady -= OnSongReady;
+            _parent.Visible = true;
+        }
+
+        private void lstSongs_VisibleChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void Streaming_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            
+        }
+
+        private void lstSongs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            txtSearch.Text = lstSongs.SelectedItem.ToString();
         }
     }
 }

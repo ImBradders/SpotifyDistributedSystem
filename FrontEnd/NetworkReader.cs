@@ -26,7 +26,7 @@ namespace FrontEnd
         public void Run()
         {
             int bytesReceived;
-            byte[] buffer = new byte[200];
+            byte[] buffer = new byte[2048];
             
             //while we are still connected.
             while (_connectionState == NetworkConnectionState.Connected) 
@@ -124,9 +124,13 @@ namespace FrontEnd
                     break;
                 case "AUTH":
                     _sharedDataSource.AddUserQueue(message);
+                    //we need to go back to the connection server.
                     _sharedDataSource.AddMessage("DISCONNECT");
-                    _parent.NextServer = _parent.CommServerDetails; //we need to go back to the connection server.
+                    _parent.NextServer = _parent.CommServerDetails;
                     _parent.NextServerType = ServerType.Communication;
+                    //we then need to send these messages when we have disconnected the writer to ensure that these do not get sent to the wrong server.
+                    while (_parent.WriterAlive)
+                    {}
                     _sharedDataSource.AddMessage("CLIENT");
                     _sharedDataSource.AddMessage("GETSERVER:STREAMING");
                     break;
@@ -150,16 +154,41 @@ namespace FrontEnd
             {
                 case "ADDED":
                 case "REMOVED":
-                case "SONG":
+                case "SONGS":
                 case "ERROR":
                     _sharedDataSource.AddUserQueue(message);
                     break;
-                case "EOF":
-                    if (splitMessage.Length == 3)
+                case "SONG":
+                    _sharedDataSource.IsStreaming = true;
+                    _sharedDataSource.NewSong();
+                    try
                     {
-                        if (splitMessage[1].Equals("EOF") && splitMessage[2].Equals("EOF"))
+                        while (_sharedDataSource.IsStreaming)
                         {
-                            _sharedDataSource.AddUserQueue("EOF");
+                            byte[] songBuffer = new byte[4096];
+                            int receive = _socket.Receive(songBuffer);
+                            string eofCheck = Encoding.UTF8.GetString(songBuffer);
+                            if (eofCheck.Contains("EOF:EOF:EOF"))
+                            {
+                                if (!eofCheck.StartsWith("EOF:EOF:EOF"))
+                                {
+                                    _sharedDataSource.AddMemoryStream(songBuffer, eofCheck.IndexOf("EOF:EOF:EOF"));
+                                }
+                                _sharedDataSource.IsStreaming = false;
+                                _sharedDataSource.OnSongReady();
+                            }
+                            else
+                            {
+                                _sharedDataSource.AddMemoryStream(songBuffer, receive);
+                            }
+                        }
+                    }
+                    catch (SocketException socketException)
+                    {
+                        if (_connectionState != NetworkConnectionState.Disconnecting)
+                        {
+                            //If we quit out of the reader with the next server as null, the network manager will reconnect us to the communication server.
+                            _parent.NextServer = null;
                         }
                     }
                     break;

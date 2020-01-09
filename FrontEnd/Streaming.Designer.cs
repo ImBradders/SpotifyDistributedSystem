@@ -42,6 +42,7 @@ namespace FrontEnd
             this.label2 = new System.Windows.Forms.Label();
             this.lblRecommended = new System.Windows.Forms.Label();
             this.lblErrors = new System.Windows.Forms.Label();
+            this.btnLoadSongs = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lstSongs
@@ -54,8 +55,10 @@ namespace FrontEnd
             this.lstSongs.Location = new System.Drawing.Point(12, 12);
             this.lstSongs.Name = "lstSongs";
             this.lstSongs.ScrollAlwaysVisible = true;
-            this.lstSongs.Size = new System.Drawing.Size(436, 487);
+            this.lstSongs.Size = new System.Drawing.Size(436, 508);
             this.lstSongs.TabIndex = 0;
+            this.lstSongs.SelectedIndexChanged += new System.EventHandler(this.lstSongs_SelectedIndexChanged);
+            this.lstSongs.VisibleChanged += new System.EventHandler(this.lstSongs_VisibleChanged);
             // 
             // txtSearch
             // 
@@ -80,9 +83,9 @@ namespace FrontEnd
             // 
             this.btnAdd.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.btnAdd.Location = new System.Drawing.Point(827, 74);
+            this.btnAdd.Location = new System.Drawing.Point(821, 74);
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(94, 31);
+            this.btnAdd.Size = new System.Drawing.Size(100, 39);
             this.btnAdd.TabIndex = 3;
             this.btnAdd.Text = "Add Song";
             this.btnAdd.UseVisualStyleBackColor = true;
@@ -92,9 +95,9 @@ namespace FrontEnd
             // 
             this.button1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.button1.Location = new System.Drawing.Point(467, 74);
+            this.button1.Location = new System.Drawing.Point(647, 74);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(94, 31);
+            this.button1.Size = new System.Drawing.Size(100, 39);
             this.button1.TabIndex = 4;
             this.button1.Text = "Clear Box";
             this.button1.UseVisualStyleBackColor = true;
@@ -104,9 +107,9 @@ namespace FrontEnd
             // 
             this.btnPause.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.btnPause.Location = new System.Drawing.Point(651, 163);
+            this.btnPause.Location = new System.Drawing.Point(647, 145);
             this.btnPause.Name = "btnPause";
-            this.btnPause.Size = new System.Drawing.Size(94, 31);
+            this.btnPause.Size = new System.Drawing.Size(100, 39);
             this.btnPause.TabIndex = 5;
             this.btnPause.Text = "Pause";
             this.btnPause.UseVisualStyleBackColor = true;
@@ -116,9 +119,9 @@ namespace FrontEnd
             // 
             this.btnPlay.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.btnPlay.Location = new System.Drawing.Point(651, 200);
+            this.btnPlay.Location = new System.Drawing.Point(647, 190);
             this.btnPlay.Name = "btnPlay";
-            this.btnPlay.Size = new System.Drawing.Size(94, 31);
+            this.btnPlay.Size = new System.Drawing.Size(100, 39);
             this.btnPlay.TabIndex = 6;
             this.btnPlay.Text = "Play";
             this.btnPlay.UseVisualStyleBackColor = true;
@@ -162,11 +165,24 @@ namespace FrontEnd
             this.lblErrors.Size = new System.Drawing.Size(454, 62);
             this.lblErrors.TabIndex = 10;
             // 
+            // btnLoadSongs
+            // 
+            this.btnLoadSongs.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular,
+                System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.btnLoadSongs.Location = new System.Drawing.Point(467, 74);
+            this.btnLoadSongs.Name = "btnLoadSongs";
+            this.btnLoadSongs.Size = new System.Drawing.Size(100, 39);
+            this.btnLoadSongs.TabIndex = 11;
+            this.btnLoadSongs.Text = "Load Songs";
+            this.btnLoadSongs.UseVisualStyleBackColor = true;
+            this.btnLoadSongs.Click += new System.EventHandler(this.btnLoadSongs_Click);
+            // 
             // Streaming
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(933, 519);
+            this.Controls.Add(this.btnLoadSongs);
             this.Controls.Add(this.lblErrors);
             this.Controls.Add(this.lblRecommended);
             this.Controls.Add(this.label2);
@@ -180,6 +196,8 @@ namespace FrontEnd
             this.Controls.Add(this.lstSongs);
             this.Name = "Streaming";
             this.Text = "Streaming";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Streaming_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Streaming_FormClosed);
             this.Load += new System.EventHandler(this.Streaming_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -198,5 +216,6 @@ namespace FrontEnd
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblRecommended;
         private System.Windows.Forms.Label lblErrors;
+        private System.Windows.Forms.Button btnLoadSongs;
     }
 }

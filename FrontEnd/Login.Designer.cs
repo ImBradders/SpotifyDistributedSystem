@@ -87,6 +87,7 @@ namespace FrontEnd
                 System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.txtPassword.Location = new System.Drawing.Point(113, 210);
             this.txtPassword.Name = "txtPassword";
+            this.txtPassword.PasswordChar = '*';
             this.txtPassword.Size = new System.Drawing.Size(231, 29);
             this.txtPassword.TabIndex = 3;
             // 
@@ -141,6 +142,7 @@ namespace FrontEnd
             this.Text = "Login";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Login_FormClosed);
             this.Load += new System.EventHandler(this.Login_Load);
+            this.VisibleChanged += new System.EventHandler(this.Login_VisibleChanged);
             this.ResumeLayout(false);
             this.PerformLayout();
         }

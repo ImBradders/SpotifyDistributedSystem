@@ -49,7 +49,7 @@ namespace FrontEnd
         /// </summary>
         public void Run()
         {
-            IPEndPoint serverDetails = loadCommServerDetails();
+            IPEndPoint serverDetails = LoadCommServerDetails();
 
             if (serverDetails == null)
             {
@@ -62,7 +62,7 @@ namespace FrontEnd
             //if the code reaches here, we have successfully connected to the communication server
             _sharedDataSource.CurrentServerType = ServerType.Communication;
             CommServerDetails = serverDetails;
-            doComServerStart();
+            DoComServerStart();
 
             _sharedDataSource.SocketDied = false;
             
@@ -89,7 +89,7 @@ namespace FrontEnd
                 {
                     if (_nextServer == null) // we need to go back to the communication server and try again.
                     {
-                        serverDetails = loadCommServerDetails();
+                        serverDetails = LoadCommServerDetails();
                         if (serverDetails == null) //if we cannot load the server details, we may as well give up
                         {
                             break;
@@ -100,11 +100,11 @@ namespace FrontEnd
                         //if the code reaches here, we have successfully connected to the communication server
                         _sharedDataSource.CurrentServerType = ServerType.Communication;
                         CommServerDetails = serverDetails;
-                        doComServerStart();
+                        DoComServerStart();
     
                         _sharedDataSource.SocketDied = false;
                         
-                        restoreState(_sharedDataSource.ClientState); //restore to the state we were at before we dropped the network connection.
+                        RestoreState(_sharedDataSource.ClientState); //restore to the state we were at before we dropped the network connection.
                     }
                     else
                     {
@@ -117,7 +117,7 @@ namespace FrontEnd
             }
         }
 
-        public IPEndPoint loadCommServerDetails()
+        private IPEndPoint LoadCommServerDetails()
         {
             IPEndPoint communicationServer;
             IPAddress ipAddress = null;
@@ -172,7 +172,7 @@ namespace FrontEnd
             return communicationServer;
         }
 
-        private void doComServerStart()
+        private void DoComServerStart()
         {
             byte[] buffer = new byte[100];
             int bytesToSend = Encoding.UTF8.GetBytes("CLIENT", 0, 6, buffer, 0);
@@ -183,12 +183,12 @@ namespace FrontEnd
         /// Gets the network threads back to where they were should they disconnect.
         /// </summary>
         /// <param name="state">The state that the client was previously at.</param>
-        private void restoreState(ClientState state)
+        private void RestoreState(ClientState state)
         {
             //ensure that we are starting from a clean slate.
             _sharedDataSource.EmptyMessageQueue();
             
-            doComServerStart();
+            DoComServerStart();
             if (state == ClientState.Startup)
             {
                 _sharedDataSource.AddMessage("GETSERVER:LOGIN");
