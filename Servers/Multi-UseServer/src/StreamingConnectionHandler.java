@@ -1,7 +1,4 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,8 +67,29 @@ public class StreamingConnectionHandler extends ConnectionHandler {
 
                     case "SONG":
                         //search list of files to see if any of them contain the search term
-                        buffer = MessageConverter.stringToByte(searchSongs(arguments[1]));
-                        dataOutputStream.write(buffer);
+                        String toPlay = searchSongs(arguments[1]);
+                        if (toPlay.startsWith("ERROR")) {
+                            buffer = MessageConverter.stringToByte(toPlay);
+                            dataOutputStream.write(buffer);
+                        }
+                        else {
+                            dataOutputStream.write(MessageConverter.stringToByte("SONG"));
+                            dataOutputStream.flush();
+                            Thread.sleep(100);
+                            int amountRead = 0;
+                            byte[] songBuffer = new byte[4096];
+                            FileInputStream songIn = new FileInputStream(toPlay);
+
+                            while ((amountRead = songIn.read(songBuffer, 0, songBuffer.length)) != -1) {
+                                dataOutputStream.write(songBuffer, 0, amountRead);
+                                dataOutputStream.flush();
+                            }
+
+                            Thread.sleep(100);
+                            dataOutputStream.write(MessageConverter.stringToByte("EOF:EOF:EOF"));
+                            dataOutputStream.flush();
+                        }
+
                         break;
 
                     case "SONGLIST":
@@ -86,6 +104,7 @@ public class StreamingConnectionHandler extends ConnectionHandler {
                                 buffer = MessageConverter.stringToByte("SONGS:" + song);
                                 dataOutputStream.write(buffer);
                                 dataOutputStream.flush();
+                                Thread.sleep(10);
                             }
                         }
                         break;
@@ -104,6 +123,9 @@ public class StreamingConnectionHandler extends ConnectionHandler {
             if (connectionState != ConnectionState.DISCONNECTING) {
                 e.printStackTrace();
             }
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -130,18 +152,7 @@ public class StreamingConnectionHandler extends ConnectionHandler {
 
             if (songsFound.size() > 0) {
                 String toAdd = songsFound.get(randomNumberGenerator.nextInt(songsFound.size()));
-                songQueue.enqueue(toAdd);
-                if (songStreamer == null) {
-                    songStreamer = new SongStreamer(dataOutputStream, songQueue);
-                    Thread songStreamerThread = new Thread(songStreamer);
-                    songStreamerThread.start();
-                }
-                else if (songStreamer.getStreamerStatus() == StreamerStatus.DIED || songStreamer.getStreamerStatus() == StreamerStatus.COMPLETED) {
-                    songStreamer = new SongStreamer(dataOutputStream, songQueue);
-                    Thread songStreamerThread = new Thread(songStreamer);
-                    songStreamerThread.start();
-                }
-                return "ADDED:" + toAdd;
+                return cachedStorage + fileSeparator + toAdd;
             }
             else {
                 return "ERROR:Song not in cache.";

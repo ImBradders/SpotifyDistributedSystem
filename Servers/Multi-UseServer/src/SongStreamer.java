@@ -31,7 +31,8 @@ public class SongStreamer implements Runnable {
             try {
                 FileInputStream songIn = new FileInputStream(file);
 
-                while ((amount = songIn.read(buffer, songChars.length, buffer.length - songChars.length)) != -1) {
+                while ((amount = songIn.read(buffer, songChars.length, 2048 - songChars.length)) != -1) {
+                    System.out.println(MessageConverter.byteToString(buffer, buffer.length));
                     dataOutputStream.write(buffer);
                     dataOutputStream.flush();
                 }
