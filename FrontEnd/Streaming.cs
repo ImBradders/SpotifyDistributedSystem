@@ -149,6 +149,7 @@ namespace FrontEnd
         
         private void btnLoadSongs_Click(object sender, EventArgs e)
         {
+            lstSongs.Items.Clear();
             _sharedDataSource.AddMessage("SONGLIST");
         }
 

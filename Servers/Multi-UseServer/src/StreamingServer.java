@@ -33,7 +33,7 @@ public class StreamingServer extends BaseServer {
                 file = file.mkdirs() ? file : new File(System.getProperty("user.dir"));
                 // if the file didn't get created, resort to a location that does exist.
             }
-            String cachedStorage = file.toString();
+            String musicCache = file.toString();
 
             if (!(file.canWrite() && file.canRead())) {
                 //we cannot read and write to the specified file location - therefore we are useless.
@@ -56,7 +56,7 @@ public class StreamingServer extends BaseServer {
 
                 Socket socket = serverSocket.accept();
 
-                StreamingConnectionHandler streamingConnectionHandler = new StreamingConnectionHandler(socket, cachedStorage, communicationServerDetails);
+                StreamingConnectionHandler streamingConnectionHandler = new StreamingConnectionHandler(socket, musicCache, communicationServerDetails);
                 Thread connectionHandler = new Thread(streamingConnectionHandler);
                 connectionHandler.start();
             }

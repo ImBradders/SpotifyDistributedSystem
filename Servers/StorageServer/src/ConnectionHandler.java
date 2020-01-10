@@ -1,7 +1,4 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,7 +67,13 @@ public class ConnectionHandler implements Runnable {
 
                     case "SEARCH":
                         //search list of files to see if any of them contain the search term
-                        buffer = MessageConverter.stringToByte(searchSongs(arguments[1]));
+                        String toSend = searchSongs(arguments[1]);
+                        if (toSend.startsWith("ERROR")) {
+                            buffer = MessageConverter.stringToByte(toSend);
+                        }
+                        else {
+                            buffer = MessageConverter.stringToByte("TITLE:" + toSend);
+                        }
                         dataOutputStream.write(buffer);
                         break;
 
@@ -87,10 +90,14 @@ public class ConnectionHandler implements Runnable {
                         }
                         else {
                             for (String song : songs) {
-                                buffer = MessageConverter.stringToByte("SONGS:" + song);
+                                buffer = MessageConverter.stringToByte(song);
                                 dataOutputStream.write(buffer);
                                 dataOutputStream.flush();
+                                Thread.sleep(50);
                             }
+                            buffer = MessageConverter.stringToByte("EOF:EOF:EOF");
+                            dataOutputStream.write(buffer);
+                            dataOutputStream.flush();
                         }
                         break;
 
@@ -108,6 +115,33 @@ public class ConnectionHandler implements Runnable {
                         dataOutputStream.write(buffer);
                         break;
 
+                    case "SONG":
+                        //search list of files to see if any of them contain the search term
+                        String toPlay = searchSongs(arguments[1]);
+                        if (toPlay.startsWith("ERROR")) {
+                            buffer = MessageConverter.stringToByte(toPlay);
+                            dataOutputStream.write(buffer);
+                        }
+                        else {
+                            dataOutputStream.write(MessageConverter.stringToByte("SONG"));
+                            dataOutputStream.flush();
+                            Thread.sleep(100);
+                            int amountRead = 0;
+                            byte[] songBuffer = new byte[4096];
+                            FileInputStream songIn = new FileInputStream(musicStorage + fileSeparator + toPlay);
+
+                            while ((amountRead = songIn.read(songBuffer, 0, songBuffer.length)) != -1) {
+                                dataOutputStream.write(songBuffer, 0, amountRead);
+                                dataOutputStream.flush();
+                            }
+
+                            Thread.sleep(100);
+                            dataOutputStream.write(MessageConverter.stringToByte("EOF:EOF:EOF"));
+                            dataOutputStream.flush();
+                        }
+
+                        break;
+
                     default:
                         buffer = MessageConverter.stringToByte("MESSAGEUNSUPPORTED");
                         dataOutputStream.write(buffer);
@@ -122,6 +156,9 @@ public class ConnectionHandler implements Runnable {
             if (connectionState != ConnectionState.DISCONNECTING) {
                 e.printStackTrace();
             }
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -203,7 +240,7 @@ public class ConnectionHandler implements Runnable {
 
             if (songsFound.size() > 0) {
                 String songFound = songsFound.get(randomNumberGenerator.nextInt(songsFound.size()));
-                return "TITLE:" + songFound;
+                return songFound;
             }
         }
 

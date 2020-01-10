@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -84,6 +85,7 @@ public class StreamingConnectionHandler extends ConnectionHandler {
                                 dataOutputStream.write(songBuffer, 0, amountRead);
                                 dataOutputStream.flush();
                             }
+                            songIn.close();
 
                             Thread.sleep(100);
                             dataOutputStream.write(MessageConverter.stringToByte("EOF:EOF:EOF"));
@@ -104,7 +106,7 @@ public class StreamingConnectionHandler extends ConnectionHandler {
                                 buffer = MessageConverter.stringToByte("SONGS:" + song);
                                 dataOutputStream.write(buffer);
                                 dataOutputStream.flush();
-                                Thread.sleep(10);
+                                Thread.sleep(50);
                             }
                         }
                         break;
@@ -129,6 +131,182 @@ public class StreamingConnectionHandler extends ConnectionHandler {
         }
     }
 
+    private List<String> getAllSongsStorage() {
+        List<String> replies = new ArrayList<String>();
+        ConnectionState storageServerConnectionState = ConnectionState.CONNECTED;
+        Socket storageServer = null;
+        if (myStorageServer == null) {
+            //if we have no storage server, attempt to get it one more time.
+            getStorageServer();
+            if (myStorageServer == null) {
+                replies.add("ERROR:Storage server inaccessible.");
+                return replies;
+            }
+        }
+
+        try {
+            storageServer = new Socket(myStorageServer.getIpAddress(), myStorageServer.getPortNumber());
+            DataOutputStream storageServerOut = new DataOutputStream(storageServer.getOutputStream());
+            DataInputStream storageServerIn = new DataInputStream(storageServer.getInputStream());
+
+            storageServerOut.write(MessageConverter.stringToByte("SONGLIST"));
+
+            boolean receiving = true;
+            String temp;
+            byte[] buffer = new byte[200];
+            int bytesRead = 0;
+
+            bytesRead = storageServerIn.read(buffer);
+            temp = MessageConverter.byteToString(buffer, bytesRead);
+            if (temp.contains("ERROR:") || temp.contains("MESSAGEUNSUPPORTED")) {
+                receiving = false;
+            }
+            else if (temp.contains("EOF:EOF:EOF")) {
+                //were done
+                receiving = false;
+            }
+            else {
+                replies.add(temp);
+            }
+
+            while (receiving) {
+                bytesRead = storageServerIn.read(buffer);
+                temp = MessageConverter.byteToString(buffer, bytesRead);
+                if (temp.contains("EOF:EOF:EOF")) {
+                    //were done
+                    receiving = false;
+                }
+                else {
+                    replies.add(temp);
+                }
+            }
+
+            //safely disconnect
+            storageServerOut.write(MessageConverter.stringToByte("DISCONNECT"));
+            storageServerOut.flush();
+            storageServerConnectionState = ConnectionState.DISCONNECTING; //this is set here as the storage server may close the socket before we process its reply.
+            bytesRead = storageServerIn.read(buffer);
+            String message = MessageConverter.byteToString(buffer, bytesRead);
+            if (message.equalsIgnoreCase("DISCONNECT")) {
+                storageServer.close();
+            }
+        }
+        catch (UnknownHostException e) {
+            replies.add("ERROR:Storage server inaccessible.");
+        }
+        catch (IOException e) {
+            if (storageServerConnectionState != ConnectionState.DISCONNECTING) {
+                //we died before our time
+                replies.add("ERROR:Storage server inaccessible.");
+            }
+        }
+        finally {
+            try {
+                if (storageServer != null && storageServer.isClosed()) {
+                    storageServer.close();
+                }
+            }
+            catch (IOException e) {
+                //we couldnt close the socket but we can ignore this.
+                e.printStackTrace();
+            }
+        }
+
+        return replies;
+    }
+
+    private boolean getSongExternal(String toAdd) {
+        ConnectionState storageServerConnectionState = ConnectionState.CONNECTED;
+        Socket storageServer = null;
+        if (myStorageServer == null) {
+            //if we have no storage server, attempt to get it one more time.
+            getStorageServer();
+            if (myStorageServer == null) {
+                return false;
+            }
+        }
+
+        FileOutputStream outputStream;
+        try {
+            File file = new File(cachedStorage + fileSeparator + toAdd);
+            try {
+                byte[] data = new byte[] {};
+                outputStream = new FileOutputStream(file);
+                outputStream.write(data);
+            }
+            catch (IOException e) {
+                return false;
+            }
+
+            storageServer = new Socket(myStorageServer.getIpAddress(), myStorageServer.getPortNumber());
+            DataOutputStream storageServerOut = new DataOutputStream(storageServer.getOutputStream());
+            DataInputStream storageServerIn = new DataInputStream(storageServer.getInputStream());
+
+            storageServerOut.write(MessageConverter.stringToByte("SONG:" + toAdd));
+
+            boolean receiving = true;
+            String temp;
+            byte[] buffer = new byte[4069];
+            int bytesRead = 0;
+
+            bytesRead = storageServerIn.read(buffer);
+            temp = MessageConverter.byteToString(buffer, bytesRead);
+            if (temp.contains("ERROR:") || temp.contains("MESSAGEUNSUPPORTED")) {
+                receiving = false;
+            }
+            else if (temp.contains("EOF:EOF:EOF")) {
+                //were done
+                receiving = false;
+            }
+
+            while (receiving) {
+                bytesRead = storageServerIn.read(buffer);
+                temp = MessageConverter.byteToString(buffer, bytesRead);
+                if (temp.contains("EOF:EOF:EOF")) {
+                    //were done
+                    receiving = false;
+                    outputStream.write(buffer, 0, bytesRead - "EOF:EOF:EOF".length());
+                }
+                else {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+            outputStream.close();
+
+            //safely disconnect
+            storageServerOut.write(MessageConverter.stringToByte("DISCONNECT"));
+            storageServerOut.flush();
+            storageServerConnectionState = ConnectionState.DISCONNECTING; //this is set here as the storage server may close the socket before we process its reply.
+            bytesRead = storageServerIn.read(buffer);
+            String message = MessageConverter.byteToString(buffer, bytesRead);
+            if (message.equalsIgnoreCase("DISCONNECT")) {
+                storageServer.close();
+            }
+        }
+        catch (UnknownHostException e) {
+            return false;
+        }
+        catch (IOException e) {
+            if (storageServerConnectionState != ConnectionState.DISCONNECTING) {
+                //we died before our time
+                return false;
+            }
+        }
+        finally {
+            try {
+                if (storageServer != null && storageServer.isClosed()) {
+                    storageServer.close();
+                }
+            }
+            catch (IOException e) {
+                //we couldnt close the socket but we can ignore this.
+                e.printStackTrace();
+            }
+        }
+
+        return true;
+    }
+
     //TODO modify this so that it searches externally first and gets a name back. Once received, check for file locally, if not there, get it.
 
     /**
@@ -139,11 +317,10 @@ public class StreamingConnectionHandler extends ConnectionHandler {
      */
     private String searchSongs(String songToFind) {
         Random randomNumberGenerator = new Random(System.currentTimeMillis());
-        File songLocation = new File(cachedStorage);
-        String[] songs = songLocation.list();
+        List<String> songs = getAllSongs();
         List<String> songsFound = new ArrayList<String>();
 
-        if (songs != null) {
+        if (songs.size() > 0) {
             for (String song : songs) {
                 if (song.contains(songToFind)) {
                     songsFound.add(song);
@@ -152,10 +329,22 @@ public class StreamingConnectionHandler extends ConnectionHandler {
 
             if (songsFound.size() > 0) {
                 String toAdd = songsFound.get(randomNumberGenerator.nextInt(songsFound.size()));
-                return cachedStorage + fileSeparator + toAdd;
+                String songPath = cachedStorage + fileSeparator + toAdd;
+                File song = new File(songPath);
+                if (song.exists()) {
+                    return songPath;
+                }
+                else { //the song is not in our cache, get it from the storage server.
+                    if (getSongExternal(toAdd)) {
+                        return songPath;
+                    }
+                    else {
+                        return "ERROR:Unable to retrieve song from storage server.";
+                    }
+                }
             }
             else {
-                return "ERROR:Song not in cache.";
+                return "ERROR:Song not in system.";
             }
         }
 
@@ -172,12 +361,15 @@ public class StreamingConnectionHandler extends ConnectionHandler {
     private List<String> getAllSongs() {
         File songLocation = new File(cachedStorage);
         String[] songs = songLocation.list();
-        List<String> list;
-        if (songs != null) {
-            list = Arrays.asList(songs);
-        }
-        else {
-            list = new ArrayList<String>();
+        List<String> list = getAllSongsStorage();
+        //if we got nothing from the storage server, just output the local songs.
+        if (list.size() == 0){
+            if (songs != null) {
+                list = Arrays.asList(songs);
+            }
+            else {
+                list = new ArrayList<String>();
+            }
         }
         return list;
     }
