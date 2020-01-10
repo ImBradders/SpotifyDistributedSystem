@@ -19,8 +19,8 @@ public class StreamingConnectionHandler extends ConnectionHandler {
     private StreamingSongQueue songQueue;
     private SongStreamer songStreamer;
 
-    public StreamingConnectionHandler(Socket socket, String cachedStorageLocation, ServerConnectionDetails communicationServer) {
-        super(socket, communicationServer);
+    public StreamingConnectionHandler(Socket socket, String cachedStorageLocation, ServerConnectionDetails communicationServer, BaseServer parent) {
+        super(socket, communicationServer, parent);
         cachedStorage = cachedStorageLocation;
         fileSeparator = System.getProperty("file.separator");
         songQueue = new StreamingSongQueue();
@@ -43,6 +43,9 @@ public class StreamingConnectionHandler extends ConnectionHandler {
         }
         catch (IOException e) {
             e.printStackTrace();
+        }
+        finally {
+            parent.numConnections--;
         }
     }
 

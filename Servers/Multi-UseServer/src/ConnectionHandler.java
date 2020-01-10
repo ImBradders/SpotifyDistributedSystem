@@ -18,12 +18,14 @@ public class ConnectionHandler implements Runnable {
     protected ConnectionState connectionState;
     protected ServerConnectionDetails communicationServer;
     protected ServerConnectionDetails myStorageServer;
+    protected BaseServer parent;
     protected byte[] buffer;
     protected int bytesRead;
 
-    protected ConnectionHandler(Socket socket, ServerConnectionDetails communicationServer) {
+    protected ConnectionHandler(Socket socket, ServerConnectionDetails communicationServer, BaseServer parent) {
         this.socket = socket;
         this.communicationServer = communicationServer;
+        this.parent = parent;
         this.buffer = new byte[200];
         bytesRead = 0;
     }

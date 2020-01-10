@@ -22,11 +22,10 @@ public class LoginServer extends BaseServer {
     @Override
     public boolean start()
     {
-        boolean isRunning = true;
         try {
-            ServerConnectionDetails communicationServerDetails = getCommunicationServerDetails();
+            communicationServerDetails = getCommunicationServerDetails();
 
-            boolean communicationServerContacted = contactCommunicationServer(communicationServerDetails);
+            boolean communicationServerContacted = contactCommunicationServer();
 
             if (!communicationServerContacted) {
                 return false;
@@ -34,15 +33,25 @@ public class LoginServer extends BaseServer {
 
             //create server socket for client communication
             ServerSocket serverSocket = new ServerSocket(portNumber);
+            boolean firstTime = true;
 
-            while (isRunning) {
+            while (true) {
                 System.out.println("Awaiting clients to process...");
 
-                Socket socket = serverSocket.accept();
+                if (!firstTime && numConnections == 0) {
+                    //I cannot think of another way out of this loop.
+                    break;
+                }
 
-                LoginConnectionHandler loginConnectionHandler = new LoginConnectionHandler(socket, communicationServerDetails);
+                Socket socket = serverSocket.accept();
+                numConnections++;
+
+                LoginConnectionHandler loginConnectionHandler = new LoginConnectionHandler(socket, communicationServerDetails, this);
                 Thread connectionHandler = new Thread(loginConnectionHandler);
                 connectionHandler.start();
+                if (firstTime) {
+                    firstTime = false;
+                }
             }
         }
         catch (IOException e) {
@@ -59,10 +68,10 @@ public class LoginServer extends BaseServer {
      * @return whether or not the communication was successful.
      */
     @Override
-    protected boolean contactCommunicationServer(ServerConnectionDetails connectionDetails) {
+    protected boolean contactCommunicationServer() {
         ConnectionState connectionState = null;
         try {
-            Socket communicationServerConnection = new Socket(connectionDetails.getIpAddress(), connectionDetails.getPortNumber());
+            Socket communicationServerConnection = new Socket(communicationServerDetails.getIpAddress(), communicationServerDetails.getPortNumber());
             DataOutputStream communicationServerOutput = new DataOutputStream(communicationServerConnection.getOutputStream());
             DataInputStream communicationServerInput = new DataInputStream(communicationServerConnection.getInputStream());
             connectionState = ConnectionState.CONNECTED;

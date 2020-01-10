@@ -7,8 +7,8 @@ import java.util.List;
 
 public class LoginConnectionHandler extends ConnectionHandler {
 
-    public LoginConnectionHandler(Socket socket, ServerConnectionDetails communicationServer) {
-        super(socket, communicationServer);
+    public LoginConnectionHandler(Socket socket, ServerConnectionDetails communicationServer, BaseServer parent) {
+        super(socket, communicationServer, parent);
     }
 
     @Override
@@ -28,6 +28,9 @@ public class LoginConnectionHandler extends ConnectionHandler {
         }
         catch (IOException e) {
             e.printStackTrace();
+        }
+        finally {
+            parent.numConnections--;
         }
     }
 

@@ -7,6 +7,8 @@ import java.io.*;
  */
 public class BaseServer {
     protected int portNumber;
+    protected ServerConnectionDetails communicationServerDetails;
+    public int numConnections;
 
     /**
      * Constructor for base class to set up the necessary internal variables.
@@ -15,6 +17,7 @@ public class BaseServer {
      */
     public BaseServer(int portNumber) {
         this.portNumber = portNumber;
+        this.numConnections = 0;
     }
 
     /**
@@ -31,7 +34,7 @@ public class BaseServer {
      *
      * @return whether the communication was successful or not.
      */
-    protected boolean contactCommunicationServer(ServerConnectionDetails connectionDetails) {
+    protected boolean contactCommunicationServer() {
         return false;
     }
 

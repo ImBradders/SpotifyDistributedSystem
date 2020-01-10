@@ -14,5 +14,7 @@
 *.project
 *.iml
 
-# don't track the music folder
+# don't track the music
+
 music/
+*.wav

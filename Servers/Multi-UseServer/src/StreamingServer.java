@@ -24,7 +24,6 @@ public class StreamingServer extends BaseServer {
     @Override
     public boolean start()
     {
-        boolean isRunning = true;
         try {
             //Set up storage
             String fileSeparator = System.getProperty("file.separator");
@@ -40,9 +39,9 @@ public class StreamingServer extends BaseServer {
                 return false;
             }
 
-            ServerConnectionDetails communicationServerDetails = getCommunicationServerDetails();
+            communicationServerDetails = getCommunicationServerDetails();
 
-            boolean communicationServerContacted = contactCommunicationServer(communicationServerDetails);
+            boolean communicationServerContacted = contactCommunicationServer();
 
             if (!communicationServerContacted) {
                 return false;
@@ -50,15 +49,25 @@ public class StreamingServer extends BaseServer {
 
             //create server socket for client communication
             ServerSocket serverSocket = new ServerSocket(portNumber);
+            boolean firstTime = true;
 
-            while (isRunning) {
+            while (true) {
                 System.out.println("Awaiting clients to stream to...");
 
-                Socket socket = serverSocket.accept();
+                if (!firstTime && numConnections == 0) {
+                    //I cannot think of another way out of this loop.
+                    break;
+                }
 
-                StreamingConnectionHandler streamingConnectionHandler = new StreamingConnectionHandler(socket, musicCache, communicationServerDetails);
+                Socket socket = serverSocket.accept();
+                numConnections++;
+
+                StreamingConnectionHandler streamingConnectionHandler = new StreamingConnectionHandler(socket, musicCache, communicationServerDetails, this);
                 Thread connectionHandler = new Thread(streamingConnectionHandler);
                 connectionHandler.start();
+                if (firstTime) {
+                    firstTime = false;
+                }
             }
         }
         catch (IOException e) {
@@ -75,10 +84,10 @@ public class StreamingServer extends BaseServer {
      * @return whether or not the communication was successful.
      */
     @Override
-    protected boolean contactCommunicationServer(ServerConnectionDetails connectionDetails) {
+    protected boolean contactCommunicationServer() {
         ConnectionState connectionState = null;
         try {
-            Socket communicationServerConnection = new Socket(connectionDetails.getIpAddress(), connectionDetails.getPortNumber());
+            Socket communicationServerConnection = new Socket(communicationServerDetails.getIpAddress(), communicationServerDetails.getPortNumber());
             DataOutputStream communicationServerOutput = new DataOutputStream(communicationServerConnection.getOutputStream());
             DataInputStream communicationServerInput = new DataInputStream(communicationServerConnection.getInputStream());
             connectionState = ConnectionState.CONNECTED;
