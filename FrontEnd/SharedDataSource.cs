@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FrontEnd
 {
@@ -31,7 +33,8 @@ namespace FrontEnd
             SongReadyHandler handler = SongReady;
             if (handler != null)
             {
-                handler();
+                Thread thread = new Thread(handler.Invoke);
+                thread.Start();
             }
         }
 
