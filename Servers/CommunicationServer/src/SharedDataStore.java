@@ -12,6 +12,7 @@ public class SharedDataStore {
     private final List<ServerConnectionDetails> loginServers;
     private final List<ServerConnectionDetails> streamingServers;
     private final List<ServerConnectionDetails> storageServers;
+    private final List<ServerConnectionDetails> networkServers;
     private final Random numberGen;
 
     /**
@@ -21,6 +22,7 @@ public class SharedDataStore {
         loginServers = new ArrayList<ServerConnectionDetails>();
         streamingServers = new ArrayList<ServerConnectionDetails>();
         storageServers = new ArrayList<ServerConnectionDetails>();
+        networkServers = new ArrayList<ServerConnectionDetails>();
         numberGen = new Random(System.currentTimeMillis());
     }
 
@@ -39,6 +41,8 @@ public class SharedDataStore {
 
         return classInstance;
     }
+
+    //TODO this is where you will need to do the load balancing.
 
     /**
      * Safely retrieves a server from the relevant list of currently known servers.
@@ -69,6 +73,12 @@ public class SharedDataStore {
                     }
                 }
                 break;
+            case NETWORK:
+                synchronized (networkServers) {
+                    if (networkServers.size() > 0) {
+                        toReturn = networkServers.get(numberGen.nextInt(networkServers.size()));
+                    }
+                }
             default:
                 //lol
                 break;
@@ -99,6 +109,11 @@ public class SharedDataStore {
                     streamingServers.add(serverConnectionDetails);
                 }
                 break;
+            case NETWORK:
+                synchronized (networkServers) {
+                    networkServers.add(serverConnectionDetails);
+                }
+                break;
             default:
                 //lol
                 break;
@@ -115,5 +130,52 @@ public class SharedDataStore {
         ServerConnectionDetails serverConnectionDetails = new ServerConnectionDetails(serverIp, portNumber);
 
         addServer(serverConnectionDetails, serverType);
+    }
+
+    /**
+     * Safely removes a server from the list of currently active servers.
+     *
+     * @param serverConnectionDetails the server to be removed.
+     * @param serverType the type of server that is to be removed.
+     */
+    public void removeServer(ServerConnectionDetails serverConnectionDetails, ServerType serverType) {
+        switch (serverType) {
+            case LOGIN:
+                synchronized (loginServers) {
+                    loginServers.remove(serverConnectionDetails);
+                }
+                break;
+            case STORAGE:
+                synchronized (storageServers) {
+                    storageServers.remove(serverConnectionDetails);
+                }
+                break;
+            case STREAMING:
+                synchronized (streamingServers) {
+                    streamingServers.remove(serverConnectionDetails);
+                }
+                break;
+            case NETWORK:
+                synchronized (networkServers) {
+                    networkServers.remove(serverConnectionDetails);
+                }
+                break;
+            default:
+                //lol
+                break;
+        }
+    }
+
+    /**
+     * Safely removes a server from the list of currently active servers.
+     *
+     * @param serverIP the IP address of the server to be removed.
+     * @param portNumber the port number that the server to be removed is listening on.
+     * @param serverType the type of server to be removed.
+     */
+    public void removeServer(String serverIP, int portNumber, ServerType serverType) {
+        ServerConnectionDetails serverConnectionDetails = new ServerConnectionDetails(serverIP, portNumber);
+
+        removeServer(serverConnectionDetails, serverType);
     }
 }

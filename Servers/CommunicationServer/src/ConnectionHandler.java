@@ -122,6 +122,15 @@ public class ConnectionHandler implements Runnable {
                         messageToProcess = messageToProcess.substring(arguments[0].length());
                         break;
 
+                    case "REMOVE" :
+                        int portNumberToRemove = Integer.parseInt(arguments[2]);
+                        dataStore.removeServer(socket.getInetAddress().getHostAddress(), portNumberToRemove,
+                                Enum.valueOf(ServerType.class, arguments[1]));
+                        buffer = MessageConverter.stringToByte("REMOVED");
+                        dataOut.write(buffer);
+                        messageToProcess = messageToProcess.substring(arguments[0].length() + 1 + arguments[1].length() + 1 + arguments[2].length());
+                        break;
+
                     default:
                         //message sent was unsupported.
                         buffer = MessageConverter.stringToByte("MESSAGEUNSUPPORTED");

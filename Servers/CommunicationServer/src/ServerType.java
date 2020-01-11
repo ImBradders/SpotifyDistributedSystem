@@ -6,5 +6,6 @@
 public enum ServerType {
     LOGIN,
     STREAMING,
+    NETWORK,
     STORAGE
 }
