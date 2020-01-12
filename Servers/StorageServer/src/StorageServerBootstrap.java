@@ -64,7 +64,6 @@ public class StorageServerBootstrap {
             }
         }
 
-
         //if necessary, this can be changed to create on any available port using new ServerSocket(0).
         //the port of this could then be extracted and used instead of needing one to be provided.
         boolean socketOpened = false;
