@@ -32,6 +32,7 @@ public class NetworkManager {
 
             if (!messageReceived.equals("TYPESTORED")) {
                 System.out.println("Communication server was unable to recognise this server - shutting down.");
+                return;
             }
 
             while (true) {

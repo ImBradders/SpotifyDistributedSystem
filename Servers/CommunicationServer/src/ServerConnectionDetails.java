@@ -6,6 +6,7 @@
 public class ServerConnectionDetails {
     private String ipAddress;
     private int portNumber;
+    private int currentClients;
 
     /**
      * Constructor which sets all internal class variables.
@@ -16,6 +17,7 @@ public class ServerConnectionDetails {
     ServerConnectionDetails(String ipAddress, int portNumber) {
         this.ipAddress = ipAddress;
         this.portNumber = portNumber;
+        this.currentClients = 0;
     }
 
     /**
@@ -52,5 +54,28 @@ public class ServerConnectionDetails {
      */
     public void setPortNumber(int portNumber) {
         this.portNumber = portNumber;
+    }
+
+    /**
+     * Method to get the current number of clients connected to this server.
+     *
+     * @return the number of clients that the communication server thinks that this server has on it.
+     */
+    public int getCurrentClients() {
+        return currentClients;
+    }
+
+    /**
+     * Adds a client to the number of clients that the communication server believes are currently connected to this server.
+     */
+    public void addClient() {
+        currentClients += 1;
+    }
+
+    /**
+     * Removes a client from the number of clients that the communication server currently believes is connected to this server.
+     */
+    public void removeClient () {
+        currentClients -= 1;
     }
 }

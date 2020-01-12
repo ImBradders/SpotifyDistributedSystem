@@ -44,11 +44,11 @@ SERVERTYPE : [type] : [listening port] | TYPESTORED
 
 Allows the remote server to tell the Communication Server what type of server it is.
 
-### Remove server
+### Cleint Lost
 
-REMOVE : [type] : [listening port] | REMOVED
+DROPPED : [type] : [port number] | DROPPED
 
-Removes the server from the list of currently active servers.
+A message to tell the communication server that a client has left a server.
 
 ### Get Server
 

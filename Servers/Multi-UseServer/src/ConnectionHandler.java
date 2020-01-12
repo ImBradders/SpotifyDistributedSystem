@@ -200,4 +200,59 @@ public class ConnectionHandler implements Runnable {
             return -1;
         }
     }
+
+    protected void done(String serverType, int portNumber) {
+        ConnectionState communicationServerConnectionState = ConnectionState.CONNECTED;
+        Socket communicationServerSocket = null;
+
+        if (communicationServer == null) {
+            return;
+        }
+
+        try {
+            byte[] communicationServerBuffer = new byte[200];
+            int communicationServerBytesRead = 0;
+
+            communicationServerSocket = new Socket(communicationServer.getIpAddress(), communicationServer.getPortNumber());
+            DataInputStream communicationServerInputStream = new DataInputStream(communicationServerSocket.getInputStream());
+            DataOutputStream communicationServerOutputStream = new DataOutputStream(communicationServerSocket.getOutputStream());
+
+            communicationServerOutputStream.write(MessageConverter.stringToByte("SERVER"));
+            communicationServerOutputStream.flush();
+
+            communicationServerOutputStream.write(MessageConverter.stringToByte("DROPPED:"+serverType+":"+portNumber));
+            communicationServerOutputStream.flush();
+            communicationServerBytesRead = communicationServerInputStream.read(communicationServerBuffer);
+            String message = MessageConverter.byteToString(communicationServerBuffer, communicationServerBytesRead);
+            //we get this reply but we don't really care about it.
+
+            communicationServerOutputStream.write(MessageConverter.stringToByte("DISCONNECT"));
+            communicationServerOutputStream.flush();
+            communicationServerConnectionState = ConnectionState.DISCONNECTING;
+            communicationServerBytesRead = communicationServerInputStream.read(communicationServerBuffer);
+
+            if (MessageConverter.byteToString(buffer, communicationServerBytesRead).equals("DISCONNECT")) {
+                socket.close();
+            }
+        }
+        catch (UnknownHostException e) {
+            System.out.println("Unable to contact communication server.");
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            if (communicationServerConnectionState != ConnectionState.DISCONNECTING) {
+                e.printStackTrace();
+            }
+        }
+        finally {
+            if (!socket.isClosed()) {
+                try {
+                    socket.close();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }

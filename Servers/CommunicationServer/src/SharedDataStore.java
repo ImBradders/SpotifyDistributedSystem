@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Allows for shared data storage across all threads.
@@ -13,6 +11,7 @@ public class SharedDataStore {
     private final List<ServerConnectionDetails> streamingServers;
     private final List<ServerConnectionDetails> storageServers;
     private final List<ServerConnectionDetails> networkServers;
+    private final Queue<String> networkMessages;
     private final Random numberGen;
 
     /**
@@ -23,6 +22,7 @@ public class SharedDataStore {
         streamingServers = new ArrayList<ServerConnectionDetails>();
         storageServers = new ArrayList<ServerConnectionDetails>();
         networkServers = new ArrayList<ServerConnectionDetails>();
+        networkMessages = new LinkedList<String>();
         numberGen = new Random(System.currentTimeMillis());
     }
 
@@ -42,8 +42,6 @@ public class SharedDataStore {
         return classInstance;
     }
 
-    //TODO this is where you will need to do the load balancing.
-
     /**
      * Safely retrieves a server from the relevant list of currently known servers.
      *
@@ -55,7 +53,21 @@ public class SharedDataStore {
             case LOGIN:
                 synchronized (loginServers) {
                     if (loginServers.size() > 0) {
-                        toReturn = loginServers.get(numberGen.nextInt(loginServers.size()));
+                        ServerConnectionDetails suitableServer = null;
+                        for (ServerConnectionDetails details : loginServers) {
+                            if (details.getCurrentClients() < 2) {
+                                if (suitableServer == null) {
+                                    suitableServer = details;
+                                }
+                                else if (suitableServer.getCurrentClients() > details.getCurrentClients()) {
+                                    suitableServer = details;
+                                }
+                            }
+                        }
+                        if (suitableServer == null) {
+                            addNetworkMessage("SPAWN:LOGIN");
+                        }
+                        toReturn = suitableServer;
                     }
                 }
                 break;
@@ -69,7 +81,21 @@ public class SharedDataStore {
             case STREAMING:
                 synchronized (streamingServers) {
                     if (streamingServers.size() > 0) {
-                        toReturn = streamingServers.get(numberGen.nextInt(streamingServers.size()));
+                        ServerConnectionDetails suitableServer = null;
+                        for (ServerConnectionDetails details : streamingServers) {
+                            if (details.getCurrentClients() < 2) {
+                                if (suitableServer == null) {
+                                    suitableServer = details;
+                                }
+                                else if (suitableServer.getCurrentClients() > details.getCurrentClients()) {
+                                    suitableServer = details;
+                                }
+                            }
+                        }
+                        if (suitableServer == null) {
+                            addNetworkMessage("SPAWN:STREAMING");
+                        }
+                        toReturn = suitableServer;
                     }
                 }
                 break;
@@ -132,32 +158,40 @@ public class SharedDataStore {
         addServer(serverConnectionDetails, serverType);
     }
 
-    /**
-     * Safely removes a server from the list of currently active servers.
-     *
-     * @param serverConnectionDetails the server to be removed.
-     * @param serverType the type of server that is to be removed.
-     */
-    public void removeServer(ServerConnectionDetails serverConnectionDetails, ServerType serverType) {
+    public void droppedClient(ServerConnectionDetails serverConnectionDetails, ServerType serverType) {
         switch (serverType) {
             case LOGIN:
                 synchronized (loginServers) {
-                    loginServers.remove(serverConnectionDetails);
-                }
-                break;
-            case STORAGE:
-                synchronized (storageServers) {
-                    storageServers.remove(serverConnectionDetails);
+                    for (int i = 0; i < loginServers.size(); i++) {
+                        ServerConnectionDetails current = loginServers.get(i);
+                        if (current.getIpAddress().equals(serverConnectionDetails.getIpAddress()) &&
+                                current.getPortNumber() == serverConnectionDetails.getPortNumber()) {
+                            current.removeClient();
+                            //if we have removed a client and there are no clients left, this server has been shut down.
+                            if (current.getCurrentClients() == 0) {
+                                loginServers.remove(i);
+                                checkNetworkServer(serverConnectionDetails.getIpAddress());
+                            }
+                            break;
+                        }
+                    }
                 }
                 break;
             case STREAMING:
                 synchronized (streamingServers) {
-                    streamingServers.remove(serverConnectionDetails);
-                }
-                break;
-            case NETWORK:
-                synchronized (networkServers) {
-                    networkServers.remove(serverConnectionDetails);
+                    for (int i = 0; i < streamingServers.size(); i++) {
+                        ServerConnectionDetails current = streamingServers.get(i);
+                        if (current.getIpAddress().equals(serverConnectionDetails.getIpAddress()) &&
+                                current.getPortNumber() == serverConnectionDetails.getPortNumber()) {
+                            current.removeClient();
+                            //if we have removed a client and there are no clients left, this server has been shut down.
+                            if (current.getCurrentClients() == 0) {
+                                streamingServers.remove(i);
+                                checkNetworkServer(serverConnectionDetails.getIpAddress());
+                            }
+                            break;
+                        }
+                    }
                 }
                 break;
             default:
@@ -166,16 +200,36 @@ public class SharedDataStore {
         }
     }
 
-    /**
-     * Safely removes a server from the list of currently active servers.
-     *
-     * @param serverIP the IP address of the server to be removed.
-     * @param portNumber the port number that the server to be removed is listening on.
-     * @param serverType the type of server to be removed.
-     */
-    public void removeServer(String serverIP, int portNumber, ServerType serverType) {
-        ServerConnectionDetails serverConnectionDetails = new ServerConnectionDetails(serverIP, portNumber);
+    public void droppedClient(String serverIP, int portNumber, ServerType serverType) {
+        ServerConnectionDetails connectionDetails = new ServerConnectionDetails(serverIP, portNumber);
 
-        removeServer(serverConnectionDetails, serverType);
+        droppedClient(connectionDetails, serverType);
+    }
+
+    private void checkNetworkServer(String ipAddress) {
+        synchronized (networkServers) {
+            for (int i = 0; i < networkServers.size(); i++) {
+                if (networkServers.get(i).getIpAddress().equals(ipAddress)) {
+                    networkServers.get(i).removeClient();
+                    break;
+                }
+            }
+        }
+    }
+
+    private void addNetworkMessage(String message) {
+        synchronized (networkMessages) {
+            networkMessages.add(message);
+        }
+    }
+
+    public String getNetworkMessage() {
+        String toReturn = null;
+        synchronized (networkMessages) {
+            if (networkMessages.size() > 0) {
+                toReturn = networkMessages.remove();
+            }
+        }
+        return toReturn;
     }
 }

@@ -3,6 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Random;
 
 /**
  * Handles the connection for each client currently connected to the server.
@@ -18,6 +19,7 @@ public class ConnectionHandler implements Runnable {
     private byte[] buffer = new byte[100];
     private String messageToProcess;
     private ConnectionState connectionState;
+    private boolean isNetwork;
 
     /**
      * This constructor allows for the socket to be passed in when creating the class so that it can communicate over
@@ -28,6 +30,7 @@ public class ConnectionHandler implements Runnable {
     public ConnectionHandler(Socket inSoc) {
         socket = inSoc;
         dataStore = SharedDataStore.getInstance();
+        isNetwork = false;
     }
 
     /**
@@ -50,6 +53,9 @@ public class ConnectionHandler implements Runnable {
             if (messagePumpToRun.startsWith("SERVER")) {
                 messageToProcess = messagePumpToRun.substring(6);
                 doServerMessagePump();
+                if (isNetwork) {
+                    doNetwork();
+                }
             }
             else if (messagePumpToRun.startsWith("CLIENT")) {
                 messageToProcess = messagePumpToRun.substring(6);
@@ -67,9 +73,32 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
+    private void doNetwork() {
+        Random random = new Random(System.currentTimeMillis());
+        while (true) {
+            try {
+                Thread.sleep(random.nextInt(5000));
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            String message = dataStore.getNetworkMessage();
+
+            if (message != null) {
+                try {
+                    dataOut.write(MessageConverter.stringToByte(message));
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     void doServerMessagePump() {
         try {
-            while (connectionState == ConnectionState.CONNECTED) {
+            while (connectionState == ConnectionState.CONNECTED && !isNetwork) {
                 if (messageToProcess.length() == 0) {
                     //get the sent data
                     buffer = new byte[100];
@@ -89,6 +118,11 @@ public class ConnectionHandler implements Runnable {
                         int portNumber = Integer.parseInt(arguments[2]);
                         dataStore.addServer(socket.getInetAddress().getHostAddress(), portNumber,
                                 Enum.valueOf(ServerType.class, arguments[1]));
+
+                        if (arguments[1].equalsIgnoreCase("NETWORK")) {
+                            //this connection handler is special
+                            isNetwork = true;
+                        }
 
                         //inform the user that we have stored the server.
                         buffer = MessageConverter.stringToByte("TYPESTORED");
@@ -122,11 +156,11 @@ public class ConnectionHandler implements Runnable {
                         messageToProcess = messageToProcess.substring(arguments[0].length());
                         break;
 
-                    case "REMOVE" :
-                        int portNumberToRemove = Integer.parseInt(arguments[2]);
-                        dataStore.removeServer(socket.getInetAddress().getHostAddress(), portNumberToRemove,
+                    case "DROPPED" :
+                        int portNumberDropped = Integer.parseInt(arguments[2]);
+                        dataStore.droppedClient(socket.getInetAddress().getHostAddress(), portNumberDropped,
                                 Enum.valueOf(ServerType.class, arguments[1]));
-                        buffer = MessageConverter.stringToByte("REMOVED");
+                        buffer = MessageConverter.stringToByte("DROPPED");
                         dataOut.write(buffer);
                         messageToProcess = messageToProcess.substring(arguments[0].length() + 1 + arguments[1].length() + 1 + arguments[2].length());
                         break;
