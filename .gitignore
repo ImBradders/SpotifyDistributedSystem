@@ -2,8 +2,9 @@
 *.vs/
 *.idea/
 
-# don't track any exes
+# don't track any exes or jars
 *.exe
+*.jar
 
 #don't track any output folders
 *.out/
