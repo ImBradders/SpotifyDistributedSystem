@@ -72,10 +72,6 @@ public class StorageServer {
                 return false;
             }
 
-            SongListManager songListManager = new SongListManager(musicStorage);
-            Thread songListMgr = new Thread(songListManager);
-            songListMgr.start();
-
             //create server socket for client communication
             ServerSocket serverSocket = new ServerSocket(portNumber);
 

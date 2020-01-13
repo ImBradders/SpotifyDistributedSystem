@@ -134,6 +134,70 @@ public class StreamingConnectionHandler extends ConnectionHandler {
         }
     }
 
+    /**
+     * Sends a message out to the storage server to get a recommendation
+     *
+     * @return the recommendation given.
+     */
+    private String getRecommendation() {
+        String recommendation = "ERROR:Unable to get recommendation.";
+        ConnectionState storageServerConnectionState = ConnectionState.CONNECTED;
+        Socket storageServer = null;
+        if (myStorageServer == null) {
+            //if we have no storage server, attempt to get it one more time.
+            getStorageServer();
+            if (myStorageServer == null) {
+                recommendation = "ERROR:Storage server inaccessible.";
+                return recommendation;
+            }
+        }
+
+        try {
+            storageServer = new Socket(myStorageServer.getIpAddress(), myStorageServer.getPortNumber());
+            DataOutputStream storageServerOut = new DataOutputStream(storageServer.getOutputStream());
+            DataInputStream storageServerIn = new DataInputStream(storageServer.getInputStream());
+
+            byte[] buffer = new byte[100];
+            int bytesRead = 0;
+
+            dataOutputStream.write(MessageConverter.stringToByte("RECOMMENDATION"));
+
+            bytesRead = dataInputStream.read(buffer);
+            recommendation = MessageConverter.byteToString(buffer, bytesRead);
+
+            //safely disconnect
+            storageServerOut.write(MessageConverter.stringToByte("DISCONNECT"));
+            storageServerOut.flush();
+            storageServerConnectionState = ConnectionState.DISCONNECTING; //this is set here as the storage server may close the socket before we process its reply.
+            bytesRead = storageServerIn.read(buffer);
+            String message = MessageConverter.byteToString(buffer, bytesRead);
+            if (message.equalsIgnoreCase("DISCONNECT")) {
+                storageServer.close();
+            }
+        }
+        catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            if (storageServerConnectionState != ConnectionState.DISCONNECTING) {
+                e.printStackTrace();
+            }
+        }
+        finally {
+            try {
+                if (storageServer != null && storageServer.isClosed()) {
+                    storageServer.close();
+                }
+            }
+            catch (IOException e) {
+                //we couldnt close the socket but we can ignore this.
+                e.printStackTrace();
+            }
+        }
+
+        return recommendation;
+    }
+
     private List<String> getAllSongsStorage() {
         List<String> replies = new ArrayList<String>();
         ConnectionState storageServerConnectionState = ConnectionState.CONNECTED;
@@ -310,8 +374,6 @@ public class StreamingConnectionHandler extends ConnectionHandler {
         return true;
     }
 
-    //TODO modify this so that it searches externally first and gets a name back. Once received, check for file locally, if not there, get it.
-
     /**
      * Method which searches the list of songs.
      *
@@ -353,8 +415,6 @@ public class StreamingConnectionHandler extends ConnectionHandler {
 
         return "ERROR:Song not in system.";
     }
-
-    //TODO modify this so that it searches externally first and gets a name back. Once received, check for file locally, if not there, get it.
 
     /**
      * Retrieves the full list of songs.

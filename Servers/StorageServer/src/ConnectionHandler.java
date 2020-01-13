@@ -20,12 +20,14 @@ public class ConnectionHandler implements Runnable {
     private DataInputStream dataInputStream;
     private DataOutputStream dataOutputStream;
     private ConnectionState connectionState;
+    private RecentSongs recentSongs;
 
     public ConnectionHandler(Socket socket, String musicStorage, String loginStorage, ServerConnectionDetails communicationServer) {
         this.socket = socket;
         this.communicationServer = communicationServer;
         this.musicStorage = musicStorage;
         this.loginStorage = loginStorage;
+        this.recentSongs = RecentSongs.getInstance();
         this.fileSeparator = System.getProperty("file.separator");
         this.loginDetailsList = LoginDetailsList.getInstance();
     }
@@ -123,6 +125,7 @@ public class ConnectionHandler implements Runnable {
                             dataOutputStream.write(buffer);
                         }
                         else {
+                            recentSongs.addToRecents(toPlay);
                             dataOutputStream.write(MessageConverter.stringToByte("SONG"));
                             dataOutputStream.flush();
                             Thread.sleep(100);
@@ -139,7 +142,12 @@ public class ConnectionHandler implements Runnable {
                             dataOutputStream.write(MessageConverter.stringToByte("EOF:EOF:EOF"));
                             dataOutputStream.flush();
                         }
+                        break;
 
+                    case "RECOMMEND" :
+                        buffer = MessageConverter.stringToByte(recentSongs.getRecommendation());
+                        dataOutputStream.write(buffer);
+                        dataOutputStream.flush();
                         break;
 
                     default:
