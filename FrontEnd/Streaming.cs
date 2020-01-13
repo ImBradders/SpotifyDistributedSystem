@@ -50,7 +50,20 @@ namespace FrontEnd
                     AddListControlPropertyThreadSafe(lstSongs, messages[1]);
                     break;
                 case "ERROR":
-                    SetControlPropertyThreadSafe(lblErrors, "Text", messages[1]);
+                    if (messages.Length > 1)
+                    {
+                        if (messages[1].StartsWith("No server of"))
+                        {
+                            SetControlPropertyThreadSafe(lblErrors, "Text", "Attempting to get streaming server.");
+                            //wait for 4 seconds to ensure that a server has had time to spawn.
+                            Thread.Sleep(4000);
+                            _sharedDataSource.AddMessage("GETSERVER:STREAMING");
+                        }
+                        else
+                        {
+                            SetControlPropertyThreadSafe(lblErrors, "Text", messages[1]);
+                        }
+                    }
                     break;
             }
         }

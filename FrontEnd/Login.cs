@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace FrontEnd
@@ -34,8 +35,21 @@ namespace FrontEnd
             switch (messages[0])
             {
                 case "ERROR":
-                    SetControlPropertyThreadSafe(btnLogin, "Enabled", true);
-                    SetControlPropertyThreadSafe(lblError, "Text", messages[1]);
+                    if (messages.Length > 1)
+                    {
+                        if (messages[1].StartsWith("No server of type"))
+                        {
+                            SetControlPropertyThreadSafe(lblError, "Text", "Attempting to get login server");
+                            //wait for 4 seconds to ensure that a server has had time to spawn.
+                            Thread.Sleep(4000);
+                            _sharedDataSource.AddMessage("GETSERVER:LOGIN");
+                        }
+                        else
+                        {
+                            SetControlPropertyThreadSafe(btnLogin, "Enabled", true);
+                            SetControlPropertyThreadSafe(lblError, "Text", messages[1]);
+                        }
+                    }
                     break;
                 
                 case "AUTH":

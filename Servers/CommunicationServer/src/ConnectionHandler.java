@@ -77,7 +77,7 @@ public class ConnectionHandler implements Runnable {
         Random random = new Random(System.currentTimeMillis());
         while (true) {
             try {
-                Thread.sleep(random.nextInt(5000));
+                Thread.sleep(random.nextInt(2000));
             }
             catch (InterruptedException e) {
                 e.printStackTrace();

@@ -33,24 +33,31 @@ public class LoginServer extends BaseServer {
 
             //create server socket for client communication
             ServerSocket serverSocket = new ServerSocket(portNumber);
+            //set a 60 second timeout on the server socket.
+            serverSocket.setSoTimeout(60000);
             boolean firstTime = true;
 
             while (true) {
-                System.out.println("Awaiting clients to process...");
-
                 if (!firstTime && numConnections == 0) {
                     //I cannot think of another way out of this loop.
                     break;
                 }
 
-                Socket socket = serverSocket.accept();
-                numConnections++;
+                System.out.println("Awaiting clients to process...");
 
-                LoginConnectionHandler loginConnectionHandler = new LoginConnectionHandler(socket, communicationServerDetails, this);
-                Thread connectionHandler = new Thread(loginConnectionHandler);
-                connectionHandler.start();
-                if (firstTime) {
-                    firstTime = false;
+                try {
+                    Socket socket = serverSocket.accept();
+                    numConnections++;
+
+                    LoginConnectionHandler loginConnectionHandler = new LoginConnectionHandler(socket, communicationServerDetails, this);
+                    Thread connectionHandler = new Thread(loginConnectionHandler);
+                    connectionHandler.start();
+                    if (firstTime) {
+                        firstTime = false;
+                    }
+                }
+                catch (IOException acceptFailed) {
+                    System.out.println("Accept timed out.");
                 }
             }
         }

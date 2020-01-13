@@ -158,6 +158,12 @@ public class SharedDataStore {
         addServer(serverConnectionDetails, serverType);
     }
 
+    /**
+     * A client has dropped from a particular server - the necessary changes need to be made to update the lists to show how many clients are on that server.
+     *
+     * @param serverConnectionDetails The IP and listening port number from which the client has dropped
+     * @param serverType The type of server that the client has dropped from.
+     */
     public void droppedClient(ServerConnectionDetails serverConnectionDetails, ServerType serverType) {
         switch (serverType) {
             case LOGIN:
@@ -170,7 +176,7 @@ public class SharedDataStore {
                             //if we have removed a client and there are no clients left, this server has been shut down.
                             if (current.getCurrentClients() == 0) {
                                 loginServers.remove(i);
-                                checkNetworkServer(serverConnectionDetails.getIpAddress());
+                                //checkNetworkServer(serverConnectionDetails.getIpAddress());
                             }
                             break;
                         }
@@ -187,7 +193,7 @@ public class SharedDataStore {
                             //if we have removed a client and there are no clients left, this server has been shut down.
                             if (current.getCurrentClients() == 0) {
                                 streamingServers.remove(i);
-                                checkNetworkServer(serverConnectionDetails.getIpAddress());
+                                //checkNetworkServer(serverConnectionDetails.getIpAddress());
                             }
                             break;
                         }
@@ -200,6 +206,13 @@ public class SharedDataStore {
         }
     }
 
+    /**
+     * A client has dropped from a particular server - the necessary changes need to be made to update the lists to show how many clients are on that server.
+     *
+     * @param serverIP The IP address of the server from which the client has dropped
+     * @param portNumber The listening port number of the server from which the client has dropped
+     * @param serverType The type of server from which the client has dropped
+     */
     public void droppedClient(String serverIP, int portNumber, ServerType serverType) {
         ServerConnectionDetails connectionDetails = new ServerConnectionDetails(serverIP, portNumber);
 
