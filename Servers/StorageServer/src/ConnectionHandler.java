@@ -144,8 +144,8 @@ public class ConnectionHandler implements Runnable {
                         }
                         break;
 
-                    case "RECOMMEND" :
-                        buffer = MessageConverter.stringToByte(recentSongs.getRecommendation());
+                    case "RECOMMENDATION" :
+                        buffer = MessageConverter.stringToByte("RECOMMENDATION:" + recentSongs.getRecommendation());
                         dataOutputStream.write(buffer);
                         dataOutputStream.flush();
                         break;

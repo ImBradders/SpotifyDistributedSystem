@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using Timer = System.Threading.Timer;
 
 /*
  * https://stackoverflow.com/questions/21976011/playing-byte-in-c-sharp
@@ -30,7 +31,12 @@ namespace FrontEnd
             InitializeComponent();
             btnPause.Enabled = false;
             btnPlay.Enabled = false;
-            
+            TimeSpan start = TimeSpan.Zero;
+            TimeSpan period = TimeSpan.FromMinutes(1);
+            Timer timer = new Timer((e) =>
+            {
+                _sharedDataSource.AddMessage("RECOMMENDATION");
+            }, null, start, period);
         }
 
         private void Streaming_Load(object sender, EventArgs e)
@@ -43,6 +49,8 @@ namespace FrontEnd
             string message = _sharedDataSource.GetUserQueue();
 
             string[] messages = message.Split(':');
+            
+            SetControlPropertyThreadSafe(lblErrors, "Text", "");
 
             switch (messages[0])
             {
@@ -64,6 +72,9 @@ namespace FrontEnd
                             SetControlPropertyThreadSafe(lblErrors, "Text", messages[1]);
                         }
                     }
+                    break;
+                case "RECOMMENDATION":
+                    SetControlPropertyThreadSafe(lblRecommended, "Text", messages[1]);
                     break;
             }
         }

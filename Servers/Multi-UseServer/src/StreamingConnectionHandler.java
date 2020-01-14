@@ -114,6 +114,11 @@ public class StreamingConnectionHandler extends ConnectionHandler {
                         }
                         break;
 
+                    case "RECOMMENDATION":
+                        buffer = MessageConverter.stringToByte(getRecommendation());
+                        dataOutputStream.write(buffer);
+                        break;
+
                     default:
                         buffer = MessageConverter.stringToByte("MESSAGEUNSUPPORTED");
                         dataOutputStream.write(buffer);

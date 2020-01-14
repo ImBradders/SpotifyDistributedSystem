@@ -31,6 +31,8 @@ namespace FrontEnd
             string message = _sharedDataSource.GetUserQueue();
 
             string[] messages = message.Split(':');
+            
+            SetControlPropertyThreadSafe(lblError, "Text", "");
 
             switch (messages[0])
             {
