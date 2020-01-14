@@ -16,6 +16,8 @@
 *.iml
 
 # don't track the music
-
 music/
 *.wav
+
+#don't track manifests
+*.MF
