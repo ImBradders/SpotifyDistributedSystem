@@ -46,6 +46,7 @@ public class StreamingConnectionHandler extends ConnectionHandler {
         }
         finally {
             parent.numConnections--;
+            done("STREAMING");
         }
     }
 

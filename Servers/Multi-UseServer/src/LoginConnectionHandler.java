@@ -31,6 +31,7 @@ public class LoginConnectionHandler extends ConnectionHandler {
         }
         finally {
             parent.numConnections--;
+            done("LOGIN");
         }
     }
 

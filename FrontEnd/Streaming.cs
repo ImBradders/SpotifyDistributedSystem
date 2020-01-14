@@ -21,6 +21,7 @@ namespace FrontEnd
         private Form _parent;
         private SharedDataSource _sharedDataSource;
         private SoundPlayer _soundPlayer;
+        private Timer _timer;
 
         public Streaming(Form parent)
         {
@@ -31,17 +32,12 @@ namespace FrontEnd
             InitializeComponent();
             btnPause.Enabled = false;
             btnPlay.Enabled = false;
-            TimeSpan start = TimeSpan.Zero;
-            TimeSpan period = TimeSpan.FromMinutes(1);
-            Timer timer = new Timer((e) =>
-            {
-                _sharedDataSource.AddMessage("RECOMMENDATION");
-            }, null, start, period);
+            btnLoadSongs.Enabled = false;
+            btnAdd.Enabled = false;
         }
 
         private void Streaming_Load(object sender, EventArgs e)
         {
-            
         }
 
         private void InterfaceUpdated()
@@ -69,12 +65,17 @@ namespace FrontEnd
                         }
                         else
                         {
+                            SetControlPropertyThreadSafe(btnLoadSongs, "Enabled", true);
+                            SetControlPropertyThreadSafe(btnAdd, "Enabled", true);
                             SetControlPropertyThreadSafe(lblErrors, "Text", messages[1]);
                         }
                     }
                     break;
                 case "RECOMMENDATION":
-                    SetControlPropertyThreadSafe(lblRecommended, "Text", messages[1]);
+                    if (messages.Length == 2)
+                    {
+                        SetControlPropertyThreadSafe(lblRecommended, "Text", messages[1]);
+                    }
                     break;
             }
         }
@@ -173,6 +174,10 @@ namespace FrontEnd
         
         private void btnLoadSongs_Click(object sender, EventArgs e)
         {
+            if (lblRecommended.Text.Equals(""))
+            {
+                //ResetTimer();
+            }
             lstSongs.Items.Clear();
             _sharedDataSource.AddMessage("SONGLIST");
         }
@@ -181,6 +186,8 @@ namespace FrontEnd
         {
             _sharedDataSource.Updated -= InterfaceUpdated;
             _sharedDataSource.SongReady -= OnSongReady;
+            _sharedDataSource.ClientState = ClientState.Startup;
+            _sharedDataSource.AddMessage("DISCONNECT");
             _parent.Visible = true;
         }
 
@@ -197,6 +204,17 @@ namespace FrontEnd
         private void lstSongs_SelectedIndexChanged(object sender, EventArgs e)
         {
             txtSearch.Text = lstSongs.SelectedItem.ToString();
+        }
+
+        private void ResetTimer()
+        {
+            TimeSpan start = TimeSpan.Zero;
+            TimeSpan period = TimeSpan.FromMinutes(1);
+            _timer = new Timer((e) =>
+            {
+                _sharedDataSource.AddMessage("RECOMMENDATION");
+                ResetTimer();
+            }, null, start, period);
         }
     }
 }

@@ -53,21 +53,23 @@ public class SharedDataStore {
             case LOGIN:
                 synchronized (loginServers) {
                     if (loginServers.size() > 0) {
-                        ServerConnectionDetails suitableServer = null;
-                        for (ServerConnectionDetails details : loginServers) {
+                        int selected = -1;
+                        for (int i = 0; i < loginServers.size(); i++) {
+                            ServerConnectionDetails details = loginServers.get(i);
                             if (details.getCurrentClients() < 2) {
-                                if (suitableServer == null) {
-                                    suitableServer = details;
+                                if (selected == -1) {
+                                    selected = i;
                                 }
-                                else if (suitableServer.getCurrentClients() > details.getCurrentClients()) {
-                                    suitableServer = details;
+                                else if (loginServers.get(selected).getCurrentClients() > details.getCurrentClients()) {
+                                    selected = i;
                                 }
                             }
                         }
-                        if (suitableServer == null) {
+                        if (selected == -1) {
                             addNetworkMessage("SPAWN:LOGIN");
                         }
-                        toReturn = suitableServer;
+                        loginServers.get(selected).addClient();
+                        toReturn = loginServers.get(selected);
                     }
                     else {
                         addNetworkMessage("SPAWN:LOGIN");
@@ -84,21 +86,23 @@ public class SharedDataStore {
             case STREAMING:
                 synchronized (streamingServers) {
                     if (streamingServers.size() > 0) {
-                        ServerConnectionDetails suitableServer = null;
-                        for (ServerConnectionDetails details : streamingServers) {
+                        int selected = -1;
+                        for (int i = 0; i < streamingServers.size(); i++) {
+                            ServerConnectionDetails details = streamingServers.get(i);
                             if (details.getCurrentClients() < 2) {
-                                if (suitableServer == null) {
-                                    suitableServer = details;
+                                if (selected == -1) {
+                                    selected = i;
                                 }
-                                else if (suitableServer.getCurrentClients() > details.getCurrentClients()) {
-                                    suitableServer = details;
+                                else if (streamingServers.get(selected).getCurrentClients() > details.getCurrentClients()) {
+                                    selected = i;
                                 }
                             }
                         }
-                        if (suitableServer == null) {
+                        if (selected == -1) {
                             addNetworkMessage("SPAWN:STREAMING");
                         }
-                        toReturn = suitableServer;
+                        streamingServers.get(selected).addClient();
+                        toReturn = streamingServers.get(selected);
                     }
                     else {
                         addNetworkMessage("SPAWN:STREAMING");

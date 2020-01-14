@@ -201,7 +201,7 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
-    protected void done(String serverType, int portNumber) {
+    protected void done(String serverType) {
         ConnectionState communicationServerConnectionState = ConnectionState.CONNECTED;
         Socket communicationServerSocket = null;
 
@@ -220,7 +220,7 @@ public class ConnectionHandler implements Runnable {
             communicationServerOutputStream.write(MessageConverter.stringToByte("SERVER"));
             communicationServerOutputStream.flush();
 
-            communicationServerOutputStream.write(MessageConverter.stringToByte("DROPPED:"+serverType+":"+portNumber));
+            communicationServerOutputStream.write(MessageConverter.stringToByte("DROPPED:"+serverType+":"+parent.portNumber));
             communicationServerOutputStream.flush();
             communicationServerBytesRead = communicationServerInputStream.read(communicationServerBuffer);
             String message = MessageConverter.byteToString(communicationServerBuffer, communicationServerBytesRead);

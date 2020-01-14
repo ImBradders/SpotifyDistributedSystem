@@ -14,6 +14,7 @@ namespace FrontEnd
             _sharedDataSource = SharedDataSource.GetInstance();
             InitializeComponent();
             _sharedDataSource.Updated += InterfaceUpdated;
+            btnLogin.Enabled = false;
         }
         
         private void Login_Load(object sender, EventArgs e)
@@ -126,7 +127,6 @@ namespace FrontEnd
             txtPassword.Text = "";
             txtUsername.Text = "";
             lblError.Text = "";
-            btnLogin.Enabled = true;
         }
     }
 }
