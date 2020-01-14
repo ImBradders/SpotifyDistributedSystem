@@ -43,10 +43,12 @@ public class NetworkManager {
                     case "SPAWN":
                         switch (messages[1]) {
                             case "LOGIN":
-                                //spawn a login server.
+                                System.out.println("Spawning login server.");
+                                Runtime.getRuntime().exec("java -jar Multi-UseServer.jar login");
                                 break;
                             case "STREAMING":
-                                //spawn a streaming server.
+                                System.out.println("Spawning streaming server.");
+                                Runtime.getRuntime().exec("java -jar Multi-UseServer.jar streaming");
                                 break;
                             default:
                                 dataOutputStream.write(MessageConverter.stringToByte("ERROR:Type does not exist."));

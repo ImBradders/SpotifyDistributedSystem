@@ -69,6 +69,9 @@ public class SharedDataStore {
                         }
                         toReturn = suitableServer;
                     }
+                    else {
+                        addNetworkMessage("SPAWN:LOGIN");
+                    }
                 }
                 break;
             case STORAGE:
@@ -96,6 +99,9 @@ public class SharedDataStore {
                             addNetworkMessage("SPAWN:STREAMING");
                         }
                         toReturn = suitableServer;
+                    }
+                    else {
+                        addNetworkMessage("SPAWN:STREAMING");
                     }
                 }
                 break;

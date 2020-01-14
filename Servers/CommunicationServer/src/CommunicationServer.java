@@ -31,13 +31,12 @@ public class CommunicationServer {
             ServerSocket serverSoc = new ServerSocket(portNumber);
 
             while(isRunning) {
-                System.out.println("Waiting for client connections.");
+                System.out.println("Waiting for connections.");
 
                 Socket socket = serverSoc.accept();
 
                 ConnectionHandler connectionHandler = new ConnectionHandler(socket);
                 Thread handleConnection = new Thread(connectionHandler);
-                //handleConnection.setName(socket.getLocalSocketAddress().toString());
                 handleConnection.start();
             }
         }

@@ -36,7 +36,7 @@ public class NetworkManagerBootstrap {
             return;
         }
 
-        System.out.println("Spawning Storage server on " + portNumberToUse);
+        System.out.println("Spawning network manager on " + portNumberToUse);
         NetworkManager networkManager = new NetworkManager(portNumberToUse);
         networkManager.start();
     }
