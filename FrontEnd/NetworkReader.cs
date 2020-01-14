@@ -86,6 +86,7 @@ namespace FrontEnd
                     _sharedDataSource.AddUserQueue(message);
                     break;
                 case "IP":
+                    _sharedDataSource.AddUserQueue("ERROR:Ready");
                     if (splitMessage.Length == 4)
                     {
                         string ipAddress = splitMessage[1];
@@ -158,6 +159,9 @@ namespace FrontEnd
                 case "ERROR":
                     _sharedDataSource.AddUserQueue(message);
                     break;
+                case "RECOMMENDATION":
+                    _sharedDataSource.AddUserQueue(message);
+                    break;
                 case "SONG":
                     _sharedDataSource.IsStreaming = true;
                     _sharedDataSource.NewSong();
@@ -193,8 +197,14 @@ namespace FrontEnd
                     }
                     break;
                 case "DISCONNECT":
-                    
                     _connectionState = NetworkConnectionState.Disconnecting;
+                    _parent.NextServer = _parent.CommServerDetails;
+                    _parent.NextServerType = ServerType.Communication;
+                    //we then need to send these messages when we have disconnected the writer to ensure that these do not get sent to the wrong server.
+                    while (_parent.WriterAlive)
+                    {}
+                    _sharedDataSource.AddMessage("CLIENT");
+                    _sharedDataSource.AddMessage("GETSERVER:LOGIN");
                     break;
                 default:
                     //we probably sent a bad message - we should handle this.

@@ -79,9 +79,12 @@ public class ConnectionHandler implements Runnable {
                         dataOutputStream.write(buffer);
                         break;
 
-                    case "GET":
+                    case "SONGPLAYED":
                         //send the song file to the streaming server
-
+                        String played = searchSongs(arguments[1]);
+                        if (!played.startsWith("ERROR")) {
+                            recentSongs.addToRecents(played);
+                        }
                         break;
 
                     case "SONGLIST":

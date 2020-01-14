@@ -17,11 +17,11 @@ SEARCH : [keyword] | TITLE : [song name]
 
 This will search the list of songs for a given keyword. If there is something matching that keyword, it will return the full title of the song. If nothing is found, "ERROR : no songs matching this keyword" will be sent back instead.
 
-### Get Song
+### A Song has been played
 
-GET : [song title] | [The size of the song in bytes] followed by [The song as a byte array]
+SONGPLAYED : [song title]
 
-This will request the file from the server. It will then send multiple messages until the entire file has been transferred. Once the whole file is transferred, the message "EOF:EOF:EOF" will be sent to say that the end of the file has been reached.
+This simply tells the storage server that a given song has been played. It can then add it to the list of recent requests.
 
 ### Retrieve List of Songs
 

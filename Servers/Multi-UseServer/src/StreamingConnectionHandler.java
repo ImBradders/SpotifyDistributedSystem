@@ -94,6 +94,7 @@ public class StreamingConnectionHandler extends ConnectionHandler {
                             Thread.sleep(100);
                             dataOutputStream.write(MessageConverter.stringToByte("EOF:EOF:EOF"));
                             dataOutputStream.flush();
+                            songPlayed(arguments[1]);
                         }
 
                         break;
@@ -141,6 +142,65 @@ public class StreamingConnectionHandler extends ConnectionHandler {
     }
 
     /**
+     * Tells the storage server that a given song has been played.
+     *
+     * @param songPlayed The song that was played.
+     */
+    private void songPlayed(String songPlayed) {
+        ConnectionState storageServerConnectionState = ConnectionState.CONNECTED;
+        Socket storageServer = null;
+        if (myStorageServer == null) {
+            //if we have no storage server, attempt to get it one more time.
+            getStorageServer();
+            if (myStorageServer == null) {
+            }
+        }
+
+        try {
+            storageServer = new Socket(myStorageServer.getIpAddress(), myStorageServer.getPortNumber());
+            DataOutputStream storageServerOut = new DataOutputStream(storageServer.getOutputStream());
+            DataInputStream storageServerIn = new DataInputStream(storageServer.getInputStream());
+
+            byte[] buffer = new byte[100];
+            int bytesRead = 0;
+
+            storageServerOut.write(MessageConverter.stringToByte("SONGPLAYED:"+songPlayed));
+            Thread.sleep(50);
+
+            //safely disconnect
+            storageServerOut.write(MessageConverter.stringToByte("DISCONNECT"));
+            storageServerOut.flush();
+            storageServerConnectionState = ConnectionState.DISCONNECTING; //this is set here as the storage server may close the socket before we process its reply.
+            bytesRead = storageServerIn.read(buffer);
+            String message = MessageConverter.byteToString(buffer, bytesRead);
+            if (message.equalsIgnoreCase("DISCONNECT")) {
+                storageServer.close();
+            }
+        }
+        catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e) {
+            if (storageServerConnectionState != ConnectionState.DISCONNECTING) {
+                e.printStackTrace();
+            }
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (storageServer != null && storageServer.isClosed()) {
+                    storageServer.close();
+                }
+            }
+            catch (IOException e) {
+                //we couldnt close the socket but we can ignore this.
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * Sends a message out to the storage server to get a recommendation
      *
      * @return the recommendation given.
@@ -166,9 +226,9 @@ public class StreamingConnectionHandler extends ConnectionHandler {
             byte[] buffer = new byte[100];
             int bytesRead = 0;
 
-            dataOutputStream.write(MessageConverter.stringToByte("RECOMMENDATION"));
+            storageServerOut.write(MessageConverter.stringToByte("RECOMMENDATION"));
 
-            bytesRead = dataInputStream.read(buffer);
+            bytesRead = storageServerIn.read(buffer);
             recommendation = MessageConverter.byteToString(buffer, bytesRead);
 
             //safely disconnect

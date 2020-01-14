@@ -58,6 +58,9 @@ public class RecentSongs {
         String songName = "ERROR:No recommendation provided.";
         synchronized (recentSongs) {
             if (recentSongs.size() > 0) {
+                if (weightedRandom > recentSongs.size()) {
+                    weightedRandom = recentSongs.size();
+                }
                 songName = recentSongs.get(weightedRandom);
             }
         }

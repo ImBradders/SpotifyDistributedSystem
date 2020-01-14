@@ -72,7 +72,7 @@ namespace FrontEnd
                     }
                     break;
                 case "RECOMMENDATION":
-                    if (messages.Length == 2)
+                    if (messages.Length > 1)
                     {
                         SetControlPropertyThreadSafe(lblRecommended, "Text", messages[1]);
                     }
@@ -174,12 +174,9 @@ namespace FrontEnd
         
         private void btnLoadSongs_Click(object sender, EventArgs e)
         {
-            if (lblRecommended.Text.Equals(""))
-            {
-                //ResetTimer();
-            }
             lstSongs.Items.Clear();
             _sharedDataSource.AddMessage("SONGLIST");
+            _sharedDataSource.AddMessage("RECOMMENDATION");
         }
 
         private void Streaming_FormClosed(object sender, FormClosedEventArgs e)
@@ -204,17 +201,6 @@ namespace FrontEnd
         private void lstSongs_SelectedIndexChanged(object sender, EventArgs e)
         {
             txtSearch.Text = lstSongs.SelectedItem.ToString();
-        }
-
-        private void ResetTimer()
-        {
-            TimeSpan start = TimeSpan.Zero;
-            TimeSpan period = TimeSpan.FromMinutes(1);
-            _timer = new Timer((e) =>
-            {
-                _sharedDataSource.AddMessage("RECOMMENDATION");
-                ResetTimer();
-            }, null, start, period);
         }
     }
 }
