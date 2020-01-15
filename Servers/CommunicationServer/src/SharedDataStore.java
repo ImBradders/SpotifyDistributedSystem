@@ -68,8 +68,10 @@ public class SharedDataStore {
                         if (selected == -1) {
                             addNetworkMessage("SPAWN:LOGIN");
                         }
-                        loginServers.get(selected).addClient();
-                        toReturn = loginServers.get(selected);
+                        else {
+                            loginServers.get(selected).addClient();
+                            toReturn = loginServers.get(selected);
+                        }
                     }
                     else {
                         addNetworkMessage("SPAWN:LOGIN");
@@ -101,8 +103,10 @@ public class SharedDataStore {
                         if (selected == -1) {
                             addNetworkMessage("SPAWN:STREAMING");
                         }
-                        streamingServers.get(selected).addClient();
-                        toReturn = streamingServers.get(selected);
+                        else {
+                            streamingServers.get(selected).addClient();
+                            toReturn = streamingServers.get(selected);
+                        }
                     }
                     else {
                         addNetworkMessage("SPAWN:STREAMING");
@@ -184,7 +188,7 @@ public class SharedDataStore {
                                 current.getPortNumber() == serverConnectionDetails.getPortNumber()) {
                             current.removeClient();
                             //if we have removed a client and there are no clients left, this server has been shut down.
-                            if (current.getCurrentClients() == 0) {
+                            if (current.getCurrentClients() <= 0) {
                                 loginServers.remove(i);
                                 //checkNetworkServer(serverConnectionDetails.getIpAddress());
                             }
@@ -201,7 +205,7 @@ public class SharedDataStore {
                                 current.getPortNumber() == serverConnectionDetails.getPortNumber()) {
                             current.removeClient();
                             //if we have removed a client and there are no clients left, this server has been shut down.
-                            if (current.getCurrentClients() == 0) {
+                            if (current.getCurrentClients() <= 0) {
                                 streamingServers.remove(i);
                                 //checkNetworkServer(serverConnectionDetails.getIpAddress());
                             }

@@ -59,7 +59,11 @@ public class RecentSongs {
         synchronized (recentSongs) {
             if (recentSongs.size() > 0) {
                 if (weightedRandom > recentSongs.size()) {
-                    weightedRandom = recentSongs.size();
+                    //index is 0 based but the size is 1 based.
+                    weightedRandom = recentSongs.size() - 1;
+                }
+                else if (weightedRandom == recentSongs.size()) {
+                    weightedRandom -= 1;
                 }
                 songName = recentSongs.get(weightedRandom);
             }
