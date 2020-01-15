@@ -21,3 +21,6 @@ music/
 
 #don't track manifests
 *.MF
+
+#don't track the testing document
+*.docx
