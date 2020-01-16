@@ -91,6 +91,10 @@ namespace FrontEnd
             {
                 lblErrors.Text = "Error: Search must not contain a ':'.";
             }
+            else if (txtSearch.Text.Equals(""))
+            {
+                lblErrors.Text = "Please ensure that the search box is not empty.";
+            }
             else
             {
                 _sharedDataSource.AddMessage("SONG:"+txtSearch.Text);
