@@ -1,6 +1,11 @@
 import java.io.*;
 import java.net.Socket;
 
+/**
+ * This is the network manager which tells the load balancing server that this computer is within our network and can create login or streaming servers at will.
+ *
+ * @author Bradley Davis
+ */
 public class NetworkManager {
 
     private int portNumber;
@@ -9,6 +14,9 @@ public class NetworkManager {
         this.portNumber = portNumber;
     }
 
+    /**
+     * This starts the network manager running.
+     */
     public void start() {
         try {
             ServerConnectionDetails communicationServer = getCommunicationServerDetails();
@@ -68,6 +76,12 @@ public class NetworkManager {
         }
     }
 
+    /**
+     * Reads the file containing the details for the communication server.
+     *
+     * @return the communication server details.
+     * @throws IOException if the file cannot be read.
+     */
     private ServerConnectionDetails getCommunicationServerDetails() throws IOException {
         String ipAddress = null;
         int portNumber = 0;

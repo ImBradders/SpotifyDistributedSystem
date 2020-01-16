@@ -173,7 +173,12 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
-
+    /**
+     * Processes the login command.
+     *
+     * @param arguments the arguments which were passed to the server.
+     * @return the response to be sent back.
+     */
     private String processLogin(String[] arguments) {
         String toReturn;
         if (arguments.length < 3) {

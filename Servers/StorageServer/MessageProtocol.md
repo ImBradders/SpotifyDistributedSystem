@@ -23,11 +23,17 @@ SONGPLAYED : [song title]
 
 This simply tells the storage server that a given song has been played. It can then add it to the list of recent requests.
 
+### Get a Song
+
+SONG [title] or [keyword] | SONG followed by multiple messages containing the song itself.
+
+Retrieves a song from the storage server to be sent to the streaming server.
+
 ### Retrieve List of Songs
 
 SONGLIST | SONGS : [a song title] + more
 
-Gets the full song list and sends this to the client. 
+Gets the full song list and sends this to the client.
 SONGS is followed by the first returned song and then further messages in the same format will be sent until the end of the list of songs is complete.
 
 ### Get Recommendation
@@ -40,8 +46,9 @@ Gets a recommendation which can be sent to the user.
 
 ADD : [username] : [password] | ADDED or ERROR
 
-This will add a user to the system. 
+This will add a user to the system.
 Possible Errors:
+
 - Username already exists
 - Unable to create account
 
@@ -51,6 +58,13 @@ LOGIN : [username] : [password] | AUTH or ERROR
 
 Logs a user into the system.
 Possible errors:
+
 - Username does not exist
 - Password incorrect
 - Unable to log in
+
+### Disconnect
+
+DISCONNECT | DISCONNECT
+
+This message allows servers to safely disconnect from this server.

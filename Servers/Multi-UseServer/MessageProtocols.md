@@ -23,12 +23,6 @@ SONG : [search term] | ADDED : [song title]
 
 Adds a song to this user's current queue. If the song could not be found, "ERROR : not found" shall be returned instead.
 
-### Dequeue Song
-
-REMOVE : [search term] | REMOVED : [song title]
-
-Removes a song from the client's current queue. If the song cannot be found within the queue, "ERROR : not found" shall be returned instead.
-
 ### Retrieve List of Songs
 
 SONGLIST | SONGS : [a song title] + more
@@ -36,6 +30,12 @@ SONGLIST | SONGS : [a song title] + more
 Gets the full song list and sends this to the client. 
 SONGS is followed by the first returned song and then further messages in the same format will be sent until the end of the list of songs is complete.
 Can also return "ERROR:No songs" if there are no songs in the system.
+
+### Get Recommendation
+
+RECOMMENDATION | The recommended song
+
+Sends a recommendation for what song the user could play next.
 
 ## Login Server
 
@@ -45,13 +45,13 @@ DISCONNECT | DISCONNECT
 
 This message allows the client to disconnect safely from the login server.
 
-
 ### Create Account
 
 CREATE : [username] : [password] | ADDED or ERROR
 
 Creates an account for the username and password provided.
 Possible errors include:
+
 - Not enough params.
 - Username already exists
 - Unable to create user
@@ -62,6 +62,7 @@ LOGIN : [username] : [password] | AUTH or ERROR
 
 Logs a user into their account providing them with an auth token which they can use later.
 Possible errors include:
+
 - Not enough params
 - Username does not exist
 - Password incorrect

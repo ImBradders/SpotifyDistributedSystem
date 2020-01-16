@@ -201,6 +201,13 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
+    /**
+     * This is there to run when the thread is complete. This will be the last method called by the handlers after the message pump is complete
+     *
+     * This tells the load balancing server that a client has disconnected from this server
+     *
+     * @param serverType
+     */
     protected void done(String serverType) {
         ConnectionState communicationServerConnectionState = ConnectionState.CONNECTED;
         Socket communicationServerSocket = null;

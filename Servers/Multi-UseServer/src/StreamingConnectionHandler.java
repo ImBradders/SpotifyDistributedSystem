@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-//Help: https://stackoverflow.com/questions/17044644/sending-audio-stream-over-tcp-unsupportedaudiofileexception
-
 /**
  * Connection handler for streaming server. This will handle the connection for each client connected to the streaming server.
  *
@@ -17,7 +15,6 @@ public class StreamingConnectionHandler extends ConnectionHandler {
     private final String cachedStorage;
     private final String fileSeparator;
     private StreamingSongQueue songQueue;
-    private SongStreamer songStreamer;
 
     public StreamingConnectionHandler(Socket socket, String cachedStorageLocation, ServerConnectionDetails communicationServer, BaseServer parent) {
         super(socket, communicationServer, parent);

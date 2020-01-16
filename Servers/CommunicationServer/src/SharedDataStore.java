@@ -233,23 +233,22 @@ public class SharedDataStore {
         droppedClient(connectionDetails, serverType);
     }
 
-    private void checkNetworkServer(String ipAddress) {
-        synchronized (networkServers) {
-            for (int i = 0; i < networkServers.size(); i++) {
-                if (networkServers.get(i).getIpAddress().equals(ipAddress)) {
-                    networkServers.get(i).removeClient();
-                    break;
-                }
-            }
-        }
-    }
-
+    /**
+     * Adds a message to the network message queue.
+     *
+     * @param message the message to be added to the queue.
+     */
     private void addNetworkMessage(String message) {
         synchronized (networkMessages) {
             networkMessages.add(message);
         }
     }
 
+    /**
+     * Gets a message from the network message queue.
+     *
+     * @return a message from the queue.
+     */
     public String getNetworkMessage() {
         String toReturn = null;
         synchronized (networkMessages) {

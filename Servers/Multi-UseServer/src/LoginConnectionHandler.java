@@ -5,6 +5,11 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The connection handler to run if this is to be a login server.
+ *
+ * @author Bradley Davis
+ */
 public class LoginConnectionHandler extends ConnectionHandler {
 
     public LoginConnectionHandler(Socket socket, ServerConnectionDetails communicationServer, BaseServer parent) {
@@ -85,6 +90,13 @@ public class LoginConnectionHandler extends ConnectionHandler {
         }
     }
 
+    /**
+     * Checks with the storage server to see if the user exists.
+     *
+     * @param username the username of the user.
+     * @param password the password of the user.
+     * @return whether or not the user was logged in successfully.
+     */
     private String login(String username, String password) {
         List<String> messages = new ArrayList<String>();
         messages.add("LOGIN:"+username+":"+password);
@@ -100,6 +112,13 @@ public class LoginConnectionHandler extends ConnectionHandler {
         return "AUTH";
     }
 
+    /**
+     * Adds a user to the system, contacting the external storage server to ensure that the new user is stored on disk.
+     *
+     * @param username the username that the user wishes to use.
+     * @param password the password that the user wishes to use.
+     * @return whether or not the user was stored.
+     */
     private String addUser(String username, String password) {
         List<String> messages = new ArrayList<String>();
         messages.add("ADD:"+username+":"+password);

@@ -73,6 +73,9 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
+    /**
+     * Runs the network server message pump for this connection.
+     */
     private void doNetwork() {
         Random random = new Random(System.currentTimeMillis());
         while (true) {
@@ -96,6 +99,9 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
+    /**
+     * Runs the server message pump for this connection.
+     */
     void doServerMessagePump() {
         try {
             while (connectionState == ConnectionState.CONNECTED && !isNetwork) {
@@ -181,6 +187,9 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
+    /**
+     * Runs the client message pump for this connection.
+     */
     void doClientMessagePump() {
         try {
             while (connectionState == ConnectionState.CONNECTED) {
